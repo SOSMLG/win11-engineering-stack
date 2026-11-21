@@ -31,7 +31,7 @@ so the old config made every message about 77% heavier, including the ones that 
 | `build`, `plan` | OpenCode's own defaults | unchanged |
 | `lean` | small edits, quick questions | tiny prompt, no todo/webfetch/subagents |
 | `web` | testing a site in a real browser | playwright tools on, can't edit files |
-| `docs` | Word, PDF, LaTeX | latexmk, pdflatex, xelatex, typst, pandoc run without asking |
+| `docs` | Word and PDF | latexmk, pdflatex, xelatex, pandoc run without asking |
 | `video` | scripts, captions, ffmpeg, Remotion | ffprobe runs freely, ffmpeg asks first, never overwrites a source |
 | `lookup` | library docs (context7) | subagent. `@lookup` it, or let `build` call it. read-only |
 | `review` | review a diff | subagent, read-only |

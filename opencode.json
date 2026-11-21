@@ -3,7 +3,6 @@
   "share": "disabled",
   "permission": {
     "bash": {
-      "powershell*tests*run-all.ps1*": "allow",
       "powershell*install-Win-Iot.ps1*-DryRun*": "allow"
     }
   },
@@ -11,7 +10,7 @@
     "review": {
       "description": "read-only reviewer for this repo. checks a diff against AGENTS.md rules.",
       "mode": "subagent",
-      "prompt": "You review diffs for this repo. Read AGENTS.md first and judge the diff against its rules. Report only real problems: missing $LASTEXITCODE checks, writes without a dry-run log line, Komorebi schema keys, autounattend.xml parity with ventoy/script/Win-Iot-unattended.xml, Get-Offline.ps1 id list drifting from the installer, PS 5.1 incompatibilities, changes that overwrite a lived-in config. Give file and line, one sentence each. If it looks fine, say so. Never edit files.",
+      "prompt": "You review diffs for this repo. Read AGENTS.md first and judge the diff against its rules. Report only real problems: missing $LASTEXITCODE checks, writes without a dry-run log line, PS 5.1 incompatibilities, changes that overwrite a lived-in config, stale references to removed folders. Give file and line, one sentence each. If it looks fine, say so. Never edit files.",
       "tools": {
         "write": false,
         "edit": false,
@@ -21,22 +20,19 @@
   },
   "command": {
     "test": {
-      "description": "run the repo tests and summarize failures",
-      "template": "Run `powershell -NoProfile -ExecutionPolicy Bypass -File tests\\run-all.ps1`. Report pass/fail per stage in a few lines. If something fails, show the first error and the likely cause. Do not fix anything unless I ask."
-    },
-    "review": {
-      "description": "review uncommitted changes against AGENTS.md",
-      "agent": "review",
-      "subtask": true,
-      "template": "Review my uncommitted changes. Use `git diff` and `git diff --staged`. $ARGUMENTS"
+      "description": "syntax check the installer and run its dry-run preflight",
+      "template": "powershell -NoProfile -Command $null=[System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path ./install-Win-Iot.ps1),[ref]$null,[ref]$null); powershell -NoProfile -ExecutionPolicy Bypass -File ./install-Win-Iot.ps1 -DryRun",
+      "agent": "build"
     },
     "precheck": {
-      "description": "pre-commit checklist from AGENTS.md",
-      "template": "Look at `git diff --staged` (or `git diff` if nothing is staged). Check: every new write has a dry-run log line, native exes are followed by a $LASTEXITCODE check, ISO/autounattend.xml and ventoy/script/Win-Iot-unattended.xml still match, Get-Offline.ps1 ids still match the installer, nothing is PS 7 only. Then run tests\\run-all.ps1. Give a short pass/fail list. $ARGUMENTS"
+      "description": "parse the installer before a real run",
+      "template": "powershell -NoProfile -Command $null=[System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path ./install-Win-Iot.ps1),[ref]$null,[ref]$null)",
+      "agent": "build"
     },
     "dryrun": {
-      "description": "installer dry run, then read the plan back",
-      "template": "Run `powershell -NoProfile -ExecutionPolicy Bypass -File install-Win-Iot.ps1 -DryRun $ARGUMENTS`. Then read the newest report json and the log tail and summarize what it would do, what it skipped, and any warnings. Nothing should be written outside the log and report."
+      "description": "log every write the installer would make, then stop",
+      "template": "powershell -NoProfile -ExecutionPolicy Bypass -File ./install-Win-Iot.ps1 -DryRun",
+      "agent": "build"
     }
   }
 }

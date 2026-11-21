@@ -3,8 +3,8 @@
   My Win10/Win11 IoT (Enterprise) LTSC setup. Unattended, rerunnable.
 .DESCRIPTION
   Built for a tiny10 box with no store and usually no network
-  on first boot. PS 5.1, Komorebi + whkd, Helium, VSCodium, stock taskbar.
-  No terminal, no extra shells. Stock colors everywhere.
+  on first boot. PS 5.1, stock Windows desktop, Helium, VSCodium.
+  No extra shell, no extra window manager. Stock colors everywhere.
   Engines per app, first hit wins: staged -OfflineDir files, winget,
   choco, github releases. Log lands in C:\Windows\Logs\Win-Iot-Setup either way.
 .EXAMPLE
@@ -12,8 +12,6 @@
   powershell -ExecutionPolicy Bypass -File install-Win-Iot.ps1 -Unattended -OfflineDir D:\Offline
   powershell -ExecutionPolicy Bypass -File install-Win-Iot.ps1 -Unattended -DriverDir D:\Drivers -Reboot
   powershell -ExecutionPolicy Bypass -File install-Win-Iot.ps1 -IncludeOptional -Unattended
-  powershell -ExecutionPolicy Bypass -File install-Win-Iot.ps1 -IncludeStudy -Unattended
-  (study pack: zotero, sumatra, miktex, typst, windows terminal + their configs.)
   powershell -ExecutionPolicy Bypass -File install-Win-Iot.ps1 -TweaksOnly
   (tweaks-only: just the tweaks on any live machine. no apps, no configs, no debloat.)
   powershell -ExecutionPolicy Bypass -File install-Win-Iot.ps1 -ConfigsOnly
@@ -25,7 +23,6 @@ param(
   [switch]$NextDNS,
   [switch]$DNSAuto = $true,
   [switch]$SkipHashVerify,
-  [switch]$SkipTemplateGen,
   [switch]$Idempotent,
   [switch]$Force,
   [string]$StateDir = 'C:\Windows\Logs\Win-Iot-Setup\state',
@@ -33,7 +30,6 @@ param(
   [string]$Arch = '',
   [switch]$DetectHardware,
   [switch]$IncludeOptional,
-  [switch]$IncludeStudy,
   [switch]$Unattended,
   [switch]$NoWingetBootstrap,
   [switch]$NoChocoBootstrap,
@@ -65,7 +61,7 @@ Set-StrictMode -Version 2
 
 $Repo = Split-Path $MyInvocation.MyCommand.Path -Parent
 # -ConfigsOnly re-deploys user configs (VSCodium, Vesktop, qBittorrent, opencode,
-# komorebi, ...) and nothing else. tweaks are forced off; install phases are gated below.
+# terminal, ...) and nothing else. tweaks are forced off; install phases are gated below.
 if ($ConfigsOnly) { $NoTweaks = $true }
 $Stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 # C:\Windows\Logs needs admin. non-admin runs fall back to TEMP instead of dying.
@@ -99,14 +95,14 @@ function Refresh-Path {
   try { $env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User') } catch {}
 }
 
-# ---------- phase 0. helpers: module load, state, OS + hw detect, templates ----------
+# ---------- phase 0. helpers: module load, state, OS + hw detect ----------
 # dot-source our lib modules if present. they carry the new universal-upgrade
 # plumbing, but every call below still guards on a missing module, so a bare
 # repo (lib/ absent) keeps working exactly as before.
 $LibDir = Join-Path $Repo 'lib'
 $loadedModules = @()
 if (Test-Path $LibDir) {
-  foreach ($m in @('Logging','Utils','Registry','OSInfo','Network','Security','Template','Config','TweakMatrix')) {
+  foreach ($m in @('Logging','Utils','Registry','OSInfo','Network','Security','Config','TweakMatrix')) {
     $mp = Join-Path $LibDir "$m.psm1"
     if (Test-Path $mp) {
       try { Import-Module $mp -Force -ErrorAction Stop -DisableNameChecking; $loadedModules += $m }
@@ -349,7 +345,7 @@ if ($Verify) {
   exit $(if ($miss) { 1 } else { 0 })
 }
 
-# one-shot task from FirstBoot already fired. remove it so it never refires.
+# one-shot Win-Iot-Setup task already fired. remove it so it never refires.
 if ($DryRun) { Log '  [dry-run] would remove the one-shot Win-Iot-Setup scheduled task.' }
 else { try { Unregister-ScheduledTask -TaskName 'Win-Iot-Setup' -Confirm:$false -EA Stop } catch {} }
 if (-not $isAdmin) { Log 'WARN: not admin. fonts and autostart will probably fail.' }
@@ -398,37 +394,6 @@ if ($DetectHardware -and (Get-Command Test-HardwareMin -EA SilentlyContinue)) {
   else { Log 'WARN: hardware detection failed (wmi gutted?).' }
 }
 
-# ---------- phase 0b. template-generated answer file (build-time parity) ----------
-# templates/autounattend.xml.tpl is the source of truth now. if it exists and
-# -SkipTemplateGen was not passed, render ISO/autounattend.xml from it so the
-# repo copy can never drift from the template. ventoy copy stays a manual mirror.
-if ((-not $SkipTemplateGen) -and (-not $TweaksOnly) -and (-not $ConfigsOnly) -and (-not $Unattended) -and (-not $DryRun)) {
-  $tpl = Join-Path $Repo 'templates\autounattend.xml.tpl'
-  if (Test-Path $tpl) {
-    try {
-      $cfg = $null
-      $cfgPath = Join-Path $Repo 'templates\build-config.json'
-      if (Test-Path $cfgPath) { $cfg = Get-Content $cfgPath -Raw | ConvertFrom-Json }
-      $userName = if ($cfg -and $cfg.username) { $cfg.username } else { 'My Pc' }
-      $arch = if ($Arch) { $Arch } elseif ($cfg -and $cfg.arch) { $cfg.arch } else { 'amd64' }
-      $inLoc = if ($cfg -and $cfg.locales.input) { $cfg.locales.input } else { '0409:00000409' }
-      $sysLoc = if ($cfg -and $cfg.locales.system) { $cfg.locales.system } else { 'en-US' }
-      $uiLoc = if ($cfg -and $cfg.locales.ui) { $cfg.locales.ui } else { 'en-US' }
-      $userLoc = if ($cfg -and $cfg.locales.user) { $cfg.locales.user } else { 'en-001' }
-      $body = [string](Get-Content $tpl -Raw)
-      $body = $body.Replace('{{ARCH}}', $arch).Replace('{{USERNAME}}', $userName).Replace('{{INPUT_LOCALE}}', $inLoc).Replace('{{SYSTEM_LOCALE}}', $sysLoc).Replace('{{UILANGUAGE}}', $uiLoc).Replace('{{USERLOCALE}}', $userLoc)
-      $outXml = Join-Path $Repo 'ISO\autounattend.xml'
-      # [string] cast: Get-Content -Raw gives $null on an empty file, and $null.TrimEnd() throws.
-      $existing = if (Test-Path $outXml) { [string](Get-Content $outXml -Raw) } else { '' }
-      # compare trimmed: a trailing newline is no reason to rewrite every run.
-      if ($body.TrimEnd() -ne $existing.TrimEnd()) {
-        # writealltext: no bom, no added newline, so the next run compares equal.
-        if (Test-Path (Split-Path $outXml)) { [System.IO.File]::WriteAllText($outXml, $body); Log '  autounattend.xml regenerated from template.' }
-      } else { Log '  autounattend.xml already matches template.' }
-    } catch { Log "  WARN template gen: $_" }
-  }
-}
-
 if ((-not $Unattended) -and (-not $DryRun)) {
   try { Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force -EA SilentlyContinue } catch {}
 }
@@ -440,7 +405,7 @@ $online = $false
 try { $online = Test-Connection -ComputerName $netProbe -Count 1 -Quiet -EA Stop } catch {}
 if (-not $online -and -not $OfflineDir) {
   Log 'WARN: no network detected and no -OfflineDir given.'
-  Log '  plug phone in for usb tethering, or seed ISO/Offline via Get-Offline.ps1 on an online PC'
+  Log '  plug phone in for usb tethering, or stage installers in a folder on an online PC'
   Log "  and re-run with: -OfflineDir '<path-to-Offline>' -Unattended"
 }
 if (-not $online) { Log 'OFFLINE mode: online engines skipped; pre-seeded files still apply.' }
@@ -994,14 +959,14 @@ if ((-not $NoTweaks) -and (Should-Run 'tweaks')) {
   Set-Reg 'HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\MTCUVC' 'EnableMtcUvc' 0
   Set-Reg 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer' 'AltTabSettings' 1
   Set-Reg 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer' 'DisallowShaking' 1
-  # shiftx5 popup dies. you live on win+shift with a tiling wm.
+  # shiftx5 popup dies. this box is keyboard-first.
   Set-Reg 'HKCU:\Control Panel\Accessibility\StickyKeys' 'Flags' '506' 'String'
   # alt-key underlines always on. keyboard-first box, no hunting.
   Set-Reg 'HKCU:\Control Panel\Accessibility\Keyboard Preference' 'On' '1' 'String'
   # taskbar locked. no accidental drags, still unlockable by right-click.
   Set-Reg 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced' 'TaskbarSizeMove' 0
   # start tiles: one reset per profile. clears app-spam back to the default layout
-  # (blank on iso installs). marker keeps re-runs and lived-in menus untouched.
+  # (blank on fresh installs). marker keeps re-runs and lived-in menus untouched.
   if ($Unattended -and -not (Get-ItemProperty 'HKCU:\Software\Win-Iot' -Name StartTilesDone -EA SilentlyContinue)) {
     if ($DryRun) { Log '  [dry-run] would reset the start tiles once.' }
     else {
@@ -1240,8 +1205,8 @@ function Ensure-Chocolatey {
 }
 # winget id -> community package. all 11 verified live on community.chocolatey.org.
 # a bad name fails safe: choco errors, id lands in the retry list.
-# no choco package: helium, all vcredists, dotnet. no choco needed: komorebi,
-# whkd, vesktop, telegram, qbittorrent, obs, git, vscodium, opencode ride github.
+# no choco package: helium, all vcredists, dotnet. vesktop, telegram, qbittorrent,
+# obs, git, vscodium, opencode ride github.
 # 'python' tracks latest 3.x (3.15 at last check) while the winget id says 3.12. close enough.
 $chocoMap = @{
   'Git.Git' = 'git'
@@ -1268,8 +1233,6 @@ if ((-not $TweaksOnly) -and (-not $ConfigsOnly)) {
 # on its releases page, so it stays staged-only. unauthenticated api = 60 calls/hr,
 # this runs max 9 per pass. cached under TEMP so re-runs skip the download.
 $gitMap = @{
-  'LGUG2Z.komorebi'        = @{ repo='LGUG2Z/komorebi'; pattern='komorebi-*-x86_64.msi' }
-  'LGUG2Z.whkd'            = @{ repo='LGUG2Z/whkd'; pattern='whkd-*-x86_64.msi' }
   'Vencord.Vesktop'        = @{ repo='Vencord/Vesktop'; pattern='Vesktop-Setup-*.exe' }
   'Telegram.TelegramDesktop' = @{ repo='telegramdesktop/tdesktop'; pattern='td-setup-win-x64-*.exe' }
   'qBittorrent.qBittorrent'  = @{ repo='qbittorrent/qBittorrent'; pattern='qbittorrent_*_x64_setup.exe' }
@@ -1382,8 +1345,6 @@ if ((-not $TweaksOnly) -and (-not $ConfigsOnly)) {
 }
 # 4.8 is already in the image. moving on.
 $coreApps = @(
-  'LGUG2Z.komorebi',
-  'LGUG2Z.whkd',
   'ImputNet.Helium',
   'VSCodium.VSCodium',
   'Vencord.Vesktop',
@@ -1391,7 +1352,7 @@ $coreApps = @(
   'qBittorrent.qBittorrent',
   'VideoLAN.VLC',
   'OBSProject.OBSStudio',
-  # automation-student essentials
+  # automation basics
   'Git.Git',
   'OpenJS.NodeJS.LTS',
   'Python.Python.3.12',
@@ -1401,7 +1362,7 @@ $coreApps = @(
   'SST.opencode'
 )
 # shell pack (taste port from the linux box): small native cli tools, no wsl.
-# winget covers them, or Get-Offline stages the files like any other app.
+# winget covers them, or -OfflineDir stages the files like any other app.
 $shellApps = @(
   'Starship.Starship',
   'ajeetdsouza.zoxide',
@@ -1413,16 +1374,11 @@ $shellApps = @(
 $coreApps += $shellApps
 $optionalApps = @('Obsidian.Obsidian','Spotify.Spotify')
 if ($IncludeOptional) { $coreApps += $optionalApps }
-# study pack, -IncludeStudy. keep in sync with ISO/Get-Offline.ps1.
-$studyApps = @('DigitalScholar.Zotero','SumatraPDF.SumatraPDF','MiKTeX.MiKTeX','Typst.Typst')
 # terminal wants win10 1903+. on ltsc 2019 it would just fail every run.
-$studyBuild = 0
-$wtOk = (-not $osInfo) -or (-not [int]::TryParse([string]$osInfo.Build, [ref]$studyBuild)) -or ($studyBuild -ge 18362)
-if ($wtOk) { $studyApps += 'Microsoft.WindowsTerminal' }
-if ($IncludeStudy) {
-  if (-not $wtOk) { Log 'study: windows terminal skipped (build too old for it).' }
-  $coreApps += $studyApps
-}
+$wtBuild = 0
+$wtOk = (-not $osInfo) -or (-not [int]::TryParse([string]$osInfo.Build, [ref]$wtBuild)) -or ($wtBuild -ge 18362)
+if ($wtOk) { $coreApps += 'Microsoft.WindowsTerminal' }
+else { Log 'terminal skipped (build too old for it).' }
 
 # -Only/-SkipApps: substring match against app ids. runtimes can be filtered
 # too, but that is on you, some apps need them.
@@ -1475,7 +1431,7 @@ function Set-AppDone($id) {
 }
 function Find-OfflineInstaller($id) {
   if (-not $OfflineDir -or -not (Test-Path $OfflineDir)) { return $null }
-  # exact match: per-ID subfolder from Get-Offline.ps1. also sidesteps VC_redist name collisions.
+  # exact match: per-ID subfolder under -OfflineDir. also sidesteps VC_redist name collisions.
   $sub = Join-Path $OfflineDir ($id -replace '[^A-Za-z0-9]+','_')
   if (Test-Path $sub) {
     return Get-ChildItem $sub -File -EA SilentlyContinue |
@@ -1577,7 +1533,7 @@ function Install-App($id) {
   if ($off) {
     Log "  SKIP $id (staged but no -Unattended. re-run with -Unattended or run $($off.Name) by hand)"
   } elseif (-not $chocoMap.ContainsKey($id) -and -not $gitMap.ContainsKey($id) -and -not $directMap.ContainsKey($id)) {
-    Log "  SKIP $id (no choco/github source. stage it: Get-Offline.ps1 -GapsOnly on a normal pc)"
+    Log "  SKIP $id (no choco/github source. stage it in -OfflineDir on a normal pc)"
   }
   return $false
 }
@@ -1630,7 +1586,7 @@ if ((-not $TweaksOnly) -and (-not $ConfigsOnly) -and (Should-Run 'apps') -and ($
   elseif ($appsAll.Count -eq 0) { Log '  nothing selected, apps phase left open.' }
   else { Log "  apps left open ($($failed.Count) failed) - re-run to retry." }
 } elseif ($TweaksOnly) { Log 'Tweaks-only: apps skipped.' } elseif ($ConfigsOnly) { Log 'Configs-only: apps skipped.' } else {
-  Log 'SKIP installs (no winget, no choco, no -OfflineDir). Get net for choco, or stage with Get-Offline.ps1 - nothing marked failed yet.'
+  Log 'SKIP installs (no winget, no choco, no -OfflineDir). Get net for choco, or stage files in -OfflineDir - nothing marked failed yet.'
 }
 
 # fresh installs don't land on PATH in this session. re-read it or python/codium are "missing".
@@ -1667,10 +1623,6 @@ Copy-Config (Join-Path $Repo 'PowerShell\Microsoft.PowerShell_profile.ps1') $doc
 if (Get-Command pwsh -EA SilentlyContinue) {
   Copy-Config (Join-Path $Repo 'PowerShell\Microsoft.PowerShell_profile.ps1') (Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'PowerShell\Microsoft.PowerShell_profile.ps1')
 }
-
-# komorebi + whkd. the only WM here.
-Copy-Config (Join-Path $Repo 'Komorebi\komorebi.json') (Join-Path $env:USERPROFILE 'komorebi.json')
-Copy-Config (Join-Path $Repo 'Komorebi\whkdrc') (Join-Path $env:USERPROFILE '.config\whkd\whkdrc')
 
 # extensions live in extensions.txt next to the script. edit that file, not this one.
 $codium = Get-CmdPath 'codium'
@@ -1717,8 +1669,6 @@ if ($DryRun -and (-not $ConfigsOnly)) {
       ForEach-Object { $_.Trim() } |
       Where-Object { $_ })
   }
-  # study pack rides on top, both names live on open-vsx.org (checked, not guessed).
-  if ($IncludeStudy) { $extList += @('James-Yu.latex-workshop','myriad-dreamin.tinymist') }
   foreach ($ext in $extList) {
     try {
       $exit = Invoke-Native { & $codium --install-extension $ext }
@@ -1774,16 +1724,8 @@ if (Test-Path $ocSkillSrc) {
     Copy-Fresh $_.FullName (Join-Path $env:USERPROFILE ('.config\opencode\skills\' + $rel))
   }
 }
-# study pack configs, fresh-only like the rest. -IncludeStudy territory.
-if ($IncludeStudy) {
-  Copy-Fresh (Join-Path $Repo 'SumatraPDF\SumatraPDF-settings.txt') (Join-Path $env:LOCALAPPDATA 'SumatraPDF\SumatraPDF-settings.txt')
-  # terminal config only where terminal can actually land (same build gate as the install).
-  if ($wtOk) { Copy-Fresh (Join-Path $Repo 'WindowsTerminal\settings.json') (Join-Path $env:LOCALAPPDATA 'Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json') }
-  # latex workshop points at the per-user sumatra path. a machine-wide install needs a nudge.
-  if (-not (Test-Path (Join-Path $env:LOCALAPPDATA 'SumatraPDF\SumatraPDF.exe')) -and (Test-Path (Join-Path $env:ProgramFiles 'SumatraPDF\SumatraPDF.exe'))) {
-    Log '  NOTE: SumatraPDF sits in Program Files. fix the two latex-workshop viewer paths in VSCodium\settings.json.'
-  }
-}
+# terminal config, fresh-only. only where terminal can actually land (same build gate as the install).
+if ($wtOk) { Copy-Fresh (Join-Path $Repo 'WindowsTerminal\settings.json') (Join-Path $env:LOCALAPPDATA 'Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json') }
 $ocPlugins = Join-Path $env:USERPROFILE '.config\opencode\plugins'
 if (-not $DryRun -and -not (Test-Path $ocPlugins)) { New-Item -ItemType Directory -Force -Path $ocPlugins | Out-Null }
 if (Test-Path (Join-Path $Repo 'Helium\master_preferences')) {
@@ -1882,28 +1824,10 @@ if ((-not $NoDebloat) -and (-not $TweaksOnly) -and (-not $ConfigsOnly) -and (Sho
   Complete-Phase 'debloat'
 } else { if ($TweaksOnly) { Log 'Tweaks-only: debloat skipped.' } elseif ($ConfigsOnly) { Log 'Configs-only: debloat skipped.' } else { Log 'Debloat skipped (-NoDebloat).' } }
 
-# ---------- 5. autostart Komorebi + whkd (user logon), stock panel untouched ----------
+# ---------- 5. defaults and finish helper, stock panel untouched ----------
 if ((-not $TweaksOnly) -and (-not $ConfigsOnly) -and (Should-Run 'autostart')) {
 Log 'Autostart...'
 Start-Phase 'autostart'
-function Set-StartupShortcut($name, $target, $argl) {
-  $sm = Join-Path $env:APPDATA 'Microsoft\Windows\Start Menu\Programs\Startup'
-  $lnk = Join-Path $sm "$name.lnk"
-  if ($DryRun) { Log "  [dry-run] would create startup shortcut: $name"; return }
-  try {
-    $ws = New-Object -ComObject WScript.Shell
-    $sc = $ws.CreateShortcut($lnk)
-    $sc.TargetPath = $target; $sc.Arguments = $argl; $sc.WorkingDirectory = (Split-Path $target); $sc.Save()
-    Log "  startup: $name"
-  } catch { Log "  WARN startup ${name}: $_" }
-}
-$kExe = Get-CmdPath 'komorebi'
-if (-not $kExe) { $kExe = "$env:ProgramFiles\komorebi\bin\komorebi.exe" }
-$wExe = Get-CmdPath 'whkd'
-if (-not $wExe) { $wExe = "$env:ProgramFiles\whkd\whkd.exe" }
-if ($kExe -and (Test-Path $kExe)) { Set-StartupShortcut 'komorebi' $kExe '' } else { Log '  komorebi exe not found yet - install it, shortcut applies next run.' }
-if ($wExe -and (Test-Path $wExe)) { Set-StartupShortcut 'whkd' $wExe '' } else { Log '  whkd exe not found yet - install it, shortcut applies next run.' }
-
 # helium default. per-user, needs no admin.
 if ($DryRun) { Log '  [dry-run] would set Helium as default browser.' }
 else {
@@ -1944,8 +1868,6 @@ if ((-not $TweaksOnly) -and (-not $ConfigsOnly)) {
   else {
   Log 'Smoke test...'
   foreach ($s in @(
-    @{ n='komorebi'; cmd={ komorebi --version } },
-    @{ n='whkd'; cmd={ Get-Command whkd -EA Stop | Out-Null } },
     @{ n='git'; cmd={ git --version } },
     @{ n='python'; cmd={ python --version } },
     @{ n='node'; cmd={ node --version } },
@@ -2034,7 +1956,7 @@ Log "Log: $LogFile"
 if ($DryRun) { Log 'Dry-run finished. nothing changed, nothing marked done.' }
 elseif (-not $TweaksOnly) {
 Log 'NEXT:'
-Log '  1. reboot, Komorebi + whkd autostart, stock taskbar as-is.'
+Log '  1. reboot, stock desktop as-is.'
 Log '  2. double-click Desktop Win-Iot-Finish.cmd (opencode auth + optional password).'
 Log '  3. MATLAB via campus license + USB-serial drivers (CH340/CP210x/ST-Link) manually.'
 } elseif ($ConfigsOnly) { Log 'Configs-only done.' } else { Log 'Tweaks-only done. reboot to feel the taskbar changes.' }

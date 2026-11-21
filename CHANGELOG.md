@@ -3,6 +3,12 @@
 format follows keep a changelog. versions are git tags like `v0.1.0`.
 
 ## [Unreleased]
+### removed
+- dropped the study pack: Zotero, SumatraPDF, MiKTeX, Typst and their configs. Windows Terminal moved into the base app list.
+- dropped Komorebi and whkd, including keybinds, WM config, autostart shortcuts and smoke checks. the desktop is stock Windows now.
+- dropped the ISO builder, autounattend templates and `templates/`. offline installs still work through `-OfflineDir`.
+- deleted the `tests/` suite on request. `-DryRun` is the remaining preflight check.
+
 ### fixed
 - `Win32-Battery` typo (hyphen) in the power-plan fallback. the laptop-by-battery check could never run, so a laptop with no system type got the desktop power plan. now `Win32_Battery`.
 - `-KeepFastStartup` only logged a line, and `powercfg /hibernate off` still ran (which disables fast startup). it now skips the hibernate-off step.

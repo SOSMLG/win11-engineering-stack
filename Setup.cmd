@@ -1,5 +1,5 @@
 @echo off
-rem one click: elevates, runs the full setup (base + study pack), keeps the window open.
+rem one click: elevates, runs the full setup (base apps), keeps the window open.
 rem extra flags pass straight through: Setup.cmd -TweaksOnly / -SkipApps / -NoTweaks ...
 cd /d "%~dp0"
 fltmc >nul 2>&1
@@ -17,7 +17,7 @@ if "%~1"=="" (
 )
 exit /b
 :run
-powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0install-Win-Iot.ps1" -Unattended -IncludeStudy %*
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0install-Win-Iot.ps1" -Unattended %*
 echo.
 echo all done. log + report live in C:\Windows\Logs\Win-Iot-Setup
 pause

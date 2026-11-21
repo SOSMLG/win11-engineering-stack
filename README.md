@@ -6,13 +6,13 @@
 
 # Win10/Win11 IoT (Enterprise) LTSC setup (slim)
 
-an unattended, rerunnable setup for Windows 10/11 IoT Enterprise LTSC: a quiet system, a tiling
-window manager, a small app set and your configs. native PowerShell 5.1, no extra frameworks.
-built for a tiny10-style box with no store and often no network on first boot.
+an unattended, rerunnable setup for Windows 10/11 IoT Enterprise LTSC: a quiet system, a small app
+set and your configs. native PowerShell 5.1, no extra frameworks, no extra window manager. built for
+a tiny10-style box with no store and often no network on first boot.
 
 ![powershell](https://img.shields.io/badge/PowerShell-5.1-5391FE?style=for-the-badge)
 ![windows](https://img.shields.io/badge/Windows-10%2F11%20IoT%20LTSC-0078D6?style=for-the-badge)
-![wm](https://img.shields.io/badge/WM-Komorebi%20%2B%20whkd-7B68EE?style=for-the-badge)
+![desktop](https://img.shields.io/badge/Desktop-stock%20Windows-0078D6?style=for-the-badge)
 ![engines](https://img.shields.io/badge/engines-winget%20%2F%20choco%20%2F%20gh-2f81f7?style=for-the-badge)
 ![license](https://img.shields.io/badge/license-not%20chosen-6e7681?style=for-the-badge)
 
@@ -20,7 +20,7 @@ built for a tiny10-style box with no store and often no network on first boot.
   <tr>
     <td align="center"><b>🧊 unattended</b><br/>no prompts, rerunnable</td>
     <td align="center"><b>📦 offline first</b><br/>staged files, winget, choco, gh</td>
-    <td align="center"><b>🪟 tiled desktop</b><br/>komorebi and whkd, sway-style keys</td>
+    <td align="center"><b>🖥️ stock desktop</b><br/>no tiling wm, no extra shell</td>
     <td align="center"><b>🛠️ native ps 5.1</b><br/>no extra frameworks</td>
   </tr>
 </table>
@@ -29,7 +29,8 @@ built for a tiny10-style box with no store and often no network on first boot.
 
 > this changes system settings and removes some built-in components. test in a VM first and run
 > `-DryRun` before a real run. everything it touches is listed in [docs/TWEAKS.md](docs/TWEAKS.md).
-> read [SECURITY.md](SECURITY.md) once: the ISO creates an admin account with a blank password.
+> read [SECURITY.md](SECURITY.md) once: the Ventoy answer file creates an admin account named
+> `My Pc` with a blank password.
 
 ## contents
 
@@ -39,18 +40,17 @@ built for a tiny10-style box with no store and often no network on first boot.
 - [how it behaves](#how-it-behaves)
 - [configs](#configs)
 - [O&O ShutUp10++](#oo-shutup10)
-- [offline and ISO](#offline-and-iso)
+- [offline install](#offline-install)
 - [after the install](#after-the-install)
-- [keybinds (sway port, WIN = sway Mod4)](#keybinds-sway-port-win--sway-mod4)
 - [repo layout](#repo-layout)
-- [testing and contributing](#testing-and-contributing)
+- [docs and contributing](#docs-and-contributing)
 - [license](#license)
 - [more from sosmlg](#more-from-sosmlg)
 
 ## quick start
 
 ```powershell
-# one click: double-click Setup.cmd (self-elevates, base + study pack, window stays open)
+# one click: double-click Setup.cmd (self-elevates, base apps, window stays open)
 
 # or by hand
 powershell -ExecutionPolicy Bypass -File install-Win-Iot.ps1 -DryRun   # read the plan first
@@ -58,23 +58,22 @@ powershell -ExecutionPolicy Bypass -File install-Win-Iot.ps1           # real ru
 powershell -ExecutionPolicy Bypass -File install-Win-Iot.ps1 -Verify   # read back the key tweaks
 ```
 
-`Setup.cmd` runs `-Unattended -IncludeStudy`. extra flags pass through: `Setup.cmd -TweaksOnly`,
-`Setup.cmd -SkipApps MiKTeX`.
+`Setup.cmd` runs `-Unattended`. extra flags pass through: `Setup.cmd -TweaksOnly`,
+`Setup.cmd -SkipApps Wireshark`.
 
 ## what you get
 
 | area | choice |
 | --- | --- |
 | shell | stock PowerShell 5.1 plus a shell pack in the profile: starship, zoxide, fzf, bat, eza, fastfetch. native binaries, every hook guarded |
-| window manager | Komorebi + whkd |
+| desktop | stock Windows desktop and taskbar, tuned with native settings. no Komorebi, whkd or custom bar |
 | browser | Helium (`ImputNet.Helium`) instead of Edge |
 | editor | VSCodium with the darkmatter theme |
 | apps | Vesktop, Telegram, qBittorrent, VLC, OBS Studio |
-| automation-student basics | Git, Node.js LTS, Python 3.12, 7-Zip, Wireshark |
+| automation basics | Git, Node.js LTS, Python 3.12, 7-Zip, Wireshark |
+| terminal | Windows Terminal on builds that support it, with a checked-in settings file |
 | AI assistant | `opencode` CLI (`SST.opencode`), sidebar in VSCodium. tuned for token cost, see [docs/OPENCODE.md](docs/OPENCODE.md) |
-| panel | stock Windows taskbar, tuned with native settings |
 | runtimes (first) | VC++ 2005 to 2022, .NET 8 Desktop Runtime, .NET Framework 3.5 and DirectPlay features |
-| study pack, `-IncludeStudy` | Zotero, SumatraPDF, MiKTeX, Typst, Windows Terminal, plus their configs |
 | optional, `-IncludeOptional` | Obsidian, Spotify |
 | debloat | IE11, Edge, Windows Media Player, PowerShell ISE, WordPad, OneDrive removed after install. `-NoDebloat` to skip |
 
@@ -92,10 +91,10 @@ why the other engines exist.
 | `-DryRun` | walk the whole install and log `[dry-run] would ...` for every write, download and cleanup, then stop. log and report json are still written |
 | `-Verify` | read back key tweaks and print ok/MISS per item. exit code 1 if anything is missing. read-only |
 | `-Unattended` | no prompts |
-| `-TweaksOnly` | just the Titus-style tweaks (plus O&O) on any live machine. no apps, configs or debloat. what the minimal ISO uses |
+| `-TweaksOnly` | just the Titus-style tweaks (plus O&O) on any live machine. no apps, configs or debloat |
 | `-ConfigsOnly` | re-copy user configs to their real locations, nothing else. overwrites fresh-only configs too |
 | `-Fixes` | repair dns, winsock and the update stack |
-| `-IncludeStudy`, `-IncludeOptional` | add the study pack, add Obsidian and Spotify |
+| `-IncludeOptional` | add Obsidian and Spotify |
 | `-NoTweaks`, `-NoDebloat` | skip the tweaks, skip the removals |
 | `-Only <substr>`, `-SkipApps <substr>` | filter the app list by id, both take arrays. filtering runtimes logs a warning. an `-Only` run skips the bulk upgrade |
 | `-OfflineDir <path>` | install from pre-seeded folders. works with no winget at all |
@@ -126,13 +125,12 @@ what the installer copies, and what happens on a re-run.
 | file | on re-run | notes |
 | --- | --- | --- |
 | `PowerShell/Microsoft.PowerShell_profile.ps1` | overwritten | UTF-8 and history-search arrows, eza aliases, starship and zoxide init, fastfetch on interactive shells, ctrl+r/t fzf chords once PSFzf is present. guarded, PS 5.1 safe |
-| `Komorebi/komorebi.json`, `Komorebi/whkdrc` | overwritten | `border_style` fixed, 10 workspaces, stock borders |
 | `VSCodium/settings.json`, `keybindings.json` | overwritten | ctrl+alt+t terminal, ctrl+alt+b sidebar. edit `extensions.txt` to change extensions |
 | `Git/.gitconfig` | kept | main branch, autocrlf, codium editor, prune, aliases. identity left blank for you |
 | `Vesktop/settings.json`, `qBittorrent/`, `VLC/`, `OBS/` | kept | fresh-install only. each folder has a 2-minute README |
 | `Vesktop/quickcss.css` | kept if edited | ships the system24 darkmatter theme. an untouched placeholder is upgraded on re-run, one you edited is kept |
-| `config/opencode.json`, `config/AGENTS.global.md`, `config/opencode-skills/` | kept | agents, commands, gated context7 and playwright MCP, global rules, 4 skills. an old `opencode.json` is not replaced, see docs/OPENCODE.md |
-| `SumatraPDF/`, `WindowsTerminal/` | kept | with `-IncludeStudy` |
+| `config/opencode.json`, `config/AGENTS.global.md`, `config/opencode-skills/` | kept | agents, commands, gated context7 and playwright MCP, global rules, skills. an old `opencode.json` is not replaced, see docs/OPENCODE.md |
+| `WindowsTerminal/settings.json` | kept | on builds that can run Windows Terminal |
 | `Helium/master_preferences` | kept | copied only if Helium has no profile data yet |
 
 `-ConfigsOnly` or `-Force` overwrite the "kept" ones too. back up anything you edited in the
@@ -144,45 +142,18 @@ values so ours win overlaps. the exe is not in this repo: if it is missing the i
 `O&O skipped (exe/cfg missing from OOSU/)` and carries on. drop the exe into `OOSU/` first if you
 want that step, or pass `-SkipOOSU` to say it is on purpose.
 
-## offline and ISO
-run `ISO/Get-Offline.ps1` to pre-seed per-ID subfolders, then `-OfflineDir <path> -Unattended`.
-the installer waits up to 4 minutes for DHCP on first boot before it declares offline.
-`ISO/README-ISO.md` has the full recipe (tiny10 base, `Build-Iso.ps1`, Ventoy).
-the answer files create an admin account named `My Pc` with a blank password and log it in once.
+## offline install
+stage installers on an online PC, then run `-OfflineDir <path> -Unattended`. the installer waits up
+to 4 minutes for DHCP on first boot before it declares offline. `ventoy/script/Win-Iot-unattended.xml`
+is the answer file for Ventoy media. there is no ISO builder in this repo now.
 
 ## after the install
 - fonts: JetBrainsMono Nerd and Monocraft go into `Fonts/`
 - Helium: confirm it as the default browser
+- Windows Terminal: open once so the packaged settings path is created, then re-run `-ConfigsOnly` if needed
 - opencode: double-click `Win-Iot-Finish.cmd` on the Public Desktop once (`opencode auth login`)
 - drivers: universal image, so add them per device (vendor NIC/wifi packs after first connect, or Windows Update once online)
 - automation lab: MATLAB through the campus license, USB-serial drivers (CH340, CP210x, ST-Link) with `-DriverDir` or by hand, vendor tools (CODESYS, TIA, Studio 5000) from their own installers
-- check: `komorebic state`, `whkd --version`
-
-## keybinds (sway port, WIN = sway Mod4)
-
-| keys | action |
-| --- | --- |
-| `Win+Return` | PowerShell |
-| `Win+T` | files |
-| `Win+Z` | Helium |
-| `Win+A` | opencode |
-| `Win+H/J/K/L` and arrows | focus |
-| `Win+Shift+...` | move |
-| `Win+1..0`, `Win+Shift+1..0` | workspaces |
-| `Win+Space` | float |
-| `Win+F` | monocle |
-| `Win+M` | maximize |
-| `Win+Alt+H/J/K/L` | resize |
-| `Win+Shift+C` | reload |
-| `Win+Shift+E` | stop WM |
-
-native and left alone: `Win` Start, `Win+V` clipboard, `Win+Shift+S` snip, `Win+X` power menu, `Win+L` lock (can't be captured).
-gaps mirror sway: inner 5, outer 0. Komorebi can't auto-assign apps to workspaces like sway `assign`,
-so park apps once per session with `Win+Shift+Num`.
-
-float rules go inline in `komorebi.json` as `floating_applications`, for example
-`{"kind":"Exe","id":"notepad.exe","matching_strategy":"Equals"}`. no `applications.json` is needed:
-the old `app_specific_configuration_path` key hard-crashed Komorebi when the file was missing, so it was removed.
 
 ## repo layout
 
@@ -191,16 +162,13 @@ the old `app_specific_configuration_path` key hard-crashed Komorebi when the fil
 | `Setup.cmd`, `install-Win-Iot.ps1` | entry points |
 | `lib/` | installer modules |
 | `config/` | defaults, tweak matrix, sha256 pins, deployed opencode config |
-| `templates/` | answer-file and build templates |
-| `ISO/`, `ventoy/` | unattended media, offline seeding, Ventoy copy of the answer file |
+| `ventoy/` | answer file for Ventoy media |
 | `OOSU/` | O&O ShutUp10++ settings |
 | app folders | config plus a short README each |
-| `tests/` | `run-all.ps1` and the suites |
 | `docs/` | tweaks reference, OpenCode setup |
 
-## testing and contributing
-`powershell -File tests\run-all.ps1` runs syntax, json, static, module smoke and installer smoke.
-CI runs the same on every push. rules for changes: [CONTRIBUTING.md](CONTRIBUTING.md) and `AGENTS.md`.
+## docs and contributing
+rules for changes: [CONTRIBUTING.md](CONTRIBUTING.md) and `AGENTS.md`.
 third-party software: [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md). history: [CHANGELOG.md](CHANGELOG.md).
 
 ## license

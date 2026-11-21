@@ -1,7 +1,7 @@
 # Windows Terminal
 
-`-IncludeStudy` installs `Microsoft.WindowsTerminal` and drops a
-`settings.json` into
+`install-Win-Iot.ps1` installs `Microsoft.WindowsTerminal` on builds that
+support it and drops a `settings.json` into
 `%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\`
 on a fresh install only (fresh = terminal never launched).
 

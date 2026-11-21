@@ -8,7 +8,6 @@ engines per app, first hit wins: staged `-OfflineDir` files, winget, Chocolatey,
 
 | item | ids / source | license (confirm) |
 |---|---|---|
-| Komorebi, whkd | `LGUG2Z.komorebi`, `LGUG2Z.whkd` | |
 | Helium | `ImputNet.Helium` | |
 | VSCodium | `VSCodium.VSCodium` | |
 | Vesktop | `Vencord.Vesktop` | |
@@ -18,7 +17,7 @@ engines per app, first hit wins: staged `-OfflineDir` files, winget, Chocolatey,
 | Wireshark | `WiresharkFoundation.Wireshark` | |
 | opencode | `SST.opencode`. CI also installs `opencode-ai@1.19.4` from npm to validate configs | |
 | shell pack | Starship, zoxide, fzf, bat, eza, Fastfetch | |
-| study pack (`-IncludeStudy`) | Zotero, SumatraPDF, MiKTeX, Typst, Windows Terminal | |
+| Windows Terminal | `Microsoft.WindowsTerminal` | |
 | optional (`-IncludeOptional`) | Obsidian, Spotify | |
 | runtimes | VC++ 2005 to 2022, .NET 8 Desktop Runtime | |
 | Chocolatey | bootstrapped when missing |
@@ -32,8 +31,5 @@ engines per app, first hit wins: staged `-OfflineDir` files, winget, Chocolatey,
 | Darkmatter VSCodium theme | `VSCodium/darkmatter-theme/` | |
 | system24 darkmatter quickcss | `Vesktop/quickcss.css` | |
 | tweak list inspired by Chris Titus Tech | `docs/TWEAKS.md` | |
-
-## used to build the ISO
-tiny10 (the base image), Ventoy, Windows ADK `oscdimg`. see `ISO/README-ISO.md`.
 
 add the license name and a link for each row. include a copy of any license that requires one.

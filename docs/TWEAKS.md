@@ -41,7 +41,7 @@ run `-DryRun` first, then `-Verify` after. test in a VM before a real box.
 - wdigest off
 - guest off
 - firewall and defender on
-- defender exclusions for `C:\Setup` and `%ProgramFiles%\MATLAB`, only if they exist (note: `C:\Setup` is where the ISO stages this repo and the offline installers)
+- defender exclusions for `C:\Setup` and `%ProgramFiles%\MATLAB`, only if they exist (note: `C:\Setup` is where this repo and the offline installers are staged)
 - teredo off
 - IPv4 preferred (a full IPv6 kill breaks things, so it is skipped)
 - DNS from `-Dns` on live adapters, Cloudflare by default

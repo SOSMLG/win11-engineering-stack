@@ -15,9 +15,6 @@
       "dist/**",
       "build/**",
       "out/**",
-      "ISO/Offline/**",
-      "ISO/build/**",
-      "**/*.iso",
       "**/*.mp4",
       "**/*.mov",
       "**/*.mkv",
@@ -128,17 +125,16 @@
       }
     },
     "docs": {
-      "description": "Word, PDF and LaTeX documents",
+      "description": "Word and PDF documents",
       "mode": "primary",
       "color": "warning",
-      "prompt": "You write Word, PDF and LaTeX documents. If no template or sample is attached, ask for one once. Prefer LaTeX or Typst for PDFs and pandoc for markdown to docx. After building, check that it compiled with no errors and name the output file. Edit the existing source, do not regenerate it. Plain language.",
+      "prompt": "You write Word and PDF documents. If no template or sample is attached, ask for one once. Prefer pandoc for markdown to docx and LaTeX for PDFs when a toolchain is installed. After building, check that it compiled with no errors and name the output file. Edit the existing source, do not regenerate it. Plain language.",
       "permission": {
         "bash": {
           "*": "ask",
           "latexmk*": "allow",
           "pdflatex*": "allow",
           "xelatex*": "allow",
-          "typst*": "allow",
           "pandoc*": "allow"
         }
       }

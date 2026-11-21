@@ -3,13 +3,13 @@
 rufus path needs nothing. ventoy skips $OEM$, so it needs this folder.
 
 ## use
-1. copy the built iso anywhere on the ventoy stick.
+1. build your own windows install media and copy it to the ventoy stick.
 2. copy this `ventoy` folder to the stick root (stick ends up with
    `/ventoy/ventoy.json` and `/ventoy/script/Win-Iot-unattended.xml`).
-3. boot the iso. install runs unattended, no menu.
+3. boot the media. install runs unattended, no menu.
 
 ## notes
-- the template is a copy of `ISO/autounattend.xml`. change one, change both.
-- the payload rides inside install.wim (`-BakeToWim`), so C:\Setup is there
-  no matter the media. no net on first boot? seed ISO/Offline before
-  baking, or tether the phone when the log asks.
+- the answer file expects this repo staged at `C:\Setup` and runs
+  `install-Win-Iot.ps1` from there on first logon.
+- no net on first boot? stage installers beside the repo or tether the phone
+  when the log asks.
