@@ -1,24 +1,23 @@
 # security
 
 ## what this repo does
-the installer changes system settings, installs software and removes some built-in components.
-read `docs/TWEAKS.md`, run `-DryRun`, and use a VM first.
+the installer changes system settings and installs software. it does not apply
+tweaks, debloat Windows, or change Defender preferences. run `-DryRun` and try a
+VM first.
 
 ## what to know before running it
 - `Setup.cmd` self-elevates. the installer is normally run with `-ExecutionPolicy Bypass`. without
   `-Unattended` it also sets the CurrentUser execution policy to RemoteSigned.
-- **downloads are only hash-checked when pinned.** `config/hashes.json` currently pins one file
-  (Lenovo's ChargeThreshold.exe, which is also signature-checked). everything else comes from
-  winget, Chocolatey or GitHub releases without a pin. `-SkipHashVerify` turns checking off.
+- **downloads are not hash-pinned.** `config/hashes.json` is empty. `-SkipHashVerify`
+  exists, but there is nothing pinned to skip right now.
 - **Chocolatey bootstrap.** if choco is missing the installer downloads and runs
   `https://community.chocolatey.org/install.ps1` with no hash check. `-NoChocoBootstrap` skips it.
-- **Defender exclusions** are added for `C:\Setup` (where this repo and the offline installers are
-  staged) and `%ProgramFiles%\MATLAB`, if they exist. files there are not scanned.
 - **the answer files** (`ventoy/script/*.xml`) create a local administrator
   named `My Pc` with a **blank password** and log it in once automatically. Windows normally limits
   blank-password accounts to console logon, but set a password after first boot if the machine
   leaves the bench.
-- the OpenCode MCP servers are run with `npx -y` at **pinned versions** (see `config/opencode.json`). the first start downloads them from npm without a hash check. bump the pins on purpose.
+- OpenCode uses the OmniRoute provider in `config/opencode/opencode.json`. set
+  `OMNIROUTE_API_KEY` as a user environment variable; the repo never stores it.
 - no secrets live in the tree. passwords and API keys are blank.
 
 ## reporting a problem

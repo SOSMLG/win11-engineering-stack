@@ -132,67 +132,6 @@ function Enable-NetworkDiscovery {
     }
 }
 
-function Optimize-PlcAdapter {
-    param([string]$Name)
-
-    if (-not $Name) {
-        Write-Skip 'No -PlcAdapter supplied; NIC tuning skipped.'
-        Write-Detail 'Re-run with -PlcAdapter "Ethernet" after connecting the PLC network adapter.'
-        return
-    }
-
-    $adapter = Get-NetAdapter -Name $Name -ErrorAction SilentlyContinue
-    if (-not $adapter) {
-        Write-Warn "Adapter '$Name' was not found; NIC tuning skipped."
-        return
-    }
-
-    Write-Detail "Tuning adapter: $($adapter.InterfaceDescription)"
-
-    if ($script:DryRun) {
-        Write-Detail "[dry-run] disable power management on $Name"
-    }
-    else {
-        try {
-            Disable-NetAdapterPowerManagement -Name $Name -ErrorAction Stop
-            Write-Ok 'Adapter power management disabled.'
-        }
-        catch {
-            Write-Warn "Power management could not be disabled: $($_.Exception.Message)"
-        }
-    }
-
-    $patterns = 'Energy|Green|EEE|Interrupt Moderation|Power Save|Selective Suspend'
-    $properties = Get-NetAdapterAdvancedProperty -Name $Name -ErrorAction SilentlyContinue |
-        Where-Object { $_.DisplayName -match $patterns }
-
-    foreach ($property in $properties) {
-        $valid = @($property.ValidDisplayValues)
-        $target = $null
-        if ($valid -contains 'Disabled') { $target = 'Disabled' }
-        elseif ($valid -contains 'Off') { $target = 'Off' }
-
-        if (-not $target) {
-            Write-Skip "No disable value for '$($property.DisplayName)'."
-            continue
-        }
-        if ($property.DisplayValue -eq $target) {
-            Write-Skip "$($property.DisplayName) already $target."
-            continue
-        }
-        if ($script:DryRun) {
-            Write-Detail "[dry-run] $($property.DisplayName) -> $target"
-            continue
-        }
-        try {
-            Set-NetAdapterAdvancedProperty -Name $Name -DisplayName $property.DisplayName -DisplayValue $target -ErrorAction Stop
-            Write-Ok "$($property.DisplayName) -> $target"
-        }
-        catch {
-            Write-Warn "$($property.DisplayName) could not be changed: $($_.Exception.Message)"
-        }
-    }
-}
 
 function Invoke-OS {
     Write-Step 'OS: engineering prerequisites'
@@ -236,16 +175,6 @@ function Invoke-OS {
     Set-S7FirewallRules
     Enable-NetworkDiscovery
 
-    Write-Step 'OS: power and network stability'
-    if ($script:DryRun) {
-        Write-Detail '[dry-run] activate High Performance power plan.'
-    }
-    else {
-        Invoke-External -FilePath 'powercfg.exe' -ArgumentList @('/setactive', 'SCHEME_MIN') -AllowFailure | Out-Null
-        Write-Ok 'High Performance power plan requested.'
-    }
-
-    Optimize-PlcAdapter -Name $script:PlcAdapter
 
     if ($restartNeeded -or (Test-RebootPending)) {
         if ($script:StackState) {

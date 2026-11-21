@@ -79,45 +79,6 @@ function Invoke-Validate {
         Add-ValidationResult -Status SKIP -Check 'Defender real-time' -Detail 'cmdlets unavailable'
     }
 
-    if ($null -ne (Get-Command Get-MpPreference -ErrorAction SilentlyContinue)) {
-        try {
-            $prefs = Get-MpPreference
-            $consent = Get-PropValue $prefs 'SubmitSamplesConsent' ''
-            $maps = Get-PropValue $prefs 'MAPSReporting' ''
-            if ($consent -eq 'NeverSend' -and $maps -eq 'Disabled') {
-                Add-ValidationResult -Status PASS -Check 'Defender privacy' -Detail 'no samples, no cloud reporting'
-            }
-            else {
-                Add-ValidationResult -Status FAIL -Check 'Defender privacy' -Detail "samples=$consent cloud=$maps"
-            }
-        }
-        catch {
-            Add-ValidationResult -Status SKIP -Check 'Defender privacy' -Detail $_.Exception.Message
-        }
-    }
-    else {
-        Add-ValidationResult -Status SKIP -Check 'Defender privacy' -Detail 'cmdlets unavailable'
-    }
-
-    if ($null -ne (Get-Command Get-MpPreference -ErrorAction SilentlyContinue)) {
-        try {
-            $exclusions = @(Get-PropValue (Get-MpPreference) 'ExclusionPath' @())
-            $engineering = @($exclusions | Where-Object { $_ -match 'Siemens|MATLAB|Engineering' })
-            if ($engineering.Count -gt 0) {
-                Add-ValidationResult -Status PASS -Check 'Defender exclusions' -Detail ($engineering -join '; ')
-            }
-            else {
-                Add-ValidationResult -Status SKIP -Check 'Defender exclusions' -Detail 'no engineering folders found yet'
-            }
-        }
-        catch {
-            Add-ValidationResult -Status SKIP -Check 'Defender exclusions' -Detail $_.Exception.Message
-        }
-    }
-    else {
-        Add-ValidationResult -Status SKIP -Check 'Defender exclusions' -Detail 'cmdlets unavailable'
-    }
-
     $featureChecks = @('NetFx3', 'IIS-WebServerRole', 'MSMQ-Server', 'WCF-HTTP-Activation45')
     foreach ($feature in $featureChecks) {
         $state = Get-OptionalFeatureState -Name $feature
@@ -193,13 +154,6 @@ function Invoke-Validate {
             Add-ValidationResult -Status FAIL -Check 'gh auth' -Detail 'not authenticated'
         }
 
-        $telemetry = (& gh config get telemetry 2>$null) -join ''
-        if ($telemetry -eq 'disabled') {
-            Add-ValidationResult -Status PASS -Check 'gh telemetry' -Detail 'disabled'
-        }
-        else {
-            Add-ValidationResult -Status FAIL -Check 'gh telemetry' -Detail $telemetry
-        }
     }
     else {
         Add-ValidationResult -Status SKIP -Check 'gh' -Detail 'not installed'

@@ -43,44 +43,6 @@ function Set-MachinePathEntry {
     Write-Ok "added to $Scope PATH: $Entry"
 }
 
-function Install-EngineeringExclusions {
-    $paths = @(
-        'C:\Program Files\Siemens',
-        'C:\ProgramData\Siemens',
-        'C:\Program Files\MATLAB',
-        (Join-Path $env:USERPROFILE 'Documents\MATLAB'),
-        (Join-Path $env:USERPROFILE 'Documents\Engineering')
-    )
-
-    if ($env:WIN11STACK_EXCLUSIONS) {
-        foreach ($extra in ($env:WIN11STACK_EXCLUSIONS -split ';')) {
-            $trimmed = $extra.Trim()
-            if ($trimmed) { $paths += $trimmed }
-        }
-    }
-
-    $existing = @($paths | Where-Object { Test-Path $_ } | Select-Object -Unique)
-    if ($existing.Count -eq 0) {
-        Write-Skip 'No engineering folders exist yet; exclusions not added.'
-        return
-    }
-
-    Add-DefenderExclusion -Path $existing
-}
-
-function Set-DefenderTuning {
-    if ($null -eq (Get-Command Add-MpPreference -ErrorAction SilentlyContinue)) {
-        Write-Skip 'Defender cmdlets are not available; tuning skipped.'
-        return
-    }
-
-    $prefs = Get-MpPreference
-    Write-Detail "Defender sample submission: $(Get-PropValue $prefs 'SubmitSamplesConsent' 'current')"
-    Write-Detail "Defender cloud reporting: $(Get-PropValue $prefs 'MAPSReporting' 'current')"
-    Write-Detail 'Defender scan schedule and reporting stay at their current values.'
-    Write-Detail 'Only Add-MpPreference is used, for exclusions. Real-time protection stays on.'
-}
-
 function Install-MatlabEnvironment {
     $root = Get-MatlabRoot
     if (-not $root) {
@@ -167,8 +129,6 @@ function Invoke-Engineering {
         Write-Ok "created $folder"
     }
 
-    Install-EngineeringExclusions
-    Set-DefenderTuning
     Install-MatlabEnvironment
 
     $tia = Get-TiaRoot

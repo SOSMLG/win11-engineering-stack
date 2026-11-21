@@ -1,6 +1,6 @@
 @echo off
 rem one click: elevates, runs the full setup (base apps), keeps the window open.
-rem extra flags pass straight through: Setup.cmd -TweaksOnly / -SkipApps / -NoTweaks ...
+rem extra flags pass straight through: Setup.cmd -SkipApps / -ConfigsOnly ...
 cd /d "%~dp0"
 fltmc >nul 2>&1
 if "%errorlevel%"=="0" goto run

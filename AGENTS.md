@@ -26,7 +26,7 @@ config tree. Docs live in `docs/`. Ventoy answer files live in `ventoy/script/`.
 - `@(ConvertFrom-Json ...)` nests arrays in PS 5.1. Assign first, wrap after.
 - A script-level call sits below the function it calls.
 - Keep WMI class names with underscores, for example `Win32_Battery`.
-- Defender stays Microsoft Defender. Use `Add-MpPreference` for exclusions.
+- Defender stays Microsoft Defender. This repo does not manage its preferences.
   Never use `Set-MpPreference`. Never disable real-time protection.
 - `OMNIROUTE_API_KEY` stays in the environment. No key goes into a file.
 - OmniRoute logon tasks go through a `.cmd` wrapper because the CLI can resolve

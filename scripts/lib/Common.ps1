@@ -443,51 +443,6 @@ function New-Shortcut {
     Write-Ok "shortcut $Path"
 }
 
-function Add-DefenderExclusion {
-    param(
-        [string[]]$Path = @(),
-        [string[]]$Process = @()
-    )
-
-    if ($null -eq (Get-Command Add-MpPreference -ErrorAction SilentlyContinue)) {
-        Write-Skip 'Defender cmdlets are not available; exclusions not added.'
-        return
-    }
-
-    $prefs = Get-MpPreference
-    $knownPaths = @(Get-PropValue $prefs 'ExclusionPath' @())
-    $knownProcesses = @(Get-PropValue $prefs 'ExclusionProcess' @())
-
-    foreach ($item in $Path) {
-        if (-not $item) { continue }
-        if ($knownPaths -contains $item) {
-            Write-Skip "Defender path exclusion already present: $item"
-            continue
-        }
-        if ($script:DryRun) {
-            Write-Detail "[dry-run] add Defender path exclusion: $item"
-        }
-        else {
-            Add-MpPreference -ExclusionPath $item
-            Write-Ok "Defender path exclusion: $item"
-        }
-    }
-
-    foreach ($item in $Process) {
-        if (-not $item) { continue }
-        if ($knownProcesses -contains $item) {
-            Write-Skip "Defender process exclusion already present: $item"
-            continue
-        }
-        if ($script:DryRun) {
-            Write-Detail "[dry-run] add Defender process exclusion: $item"
-        }
-        else {
-            Add-MpPreference -ExclusionProcess $item
-            Write-Ok "Defender process exclusion: $item"
-        }
-    }
-}
 
 function Test-WingetPackage {
     param([Parameter(Mandatory = $true)][string]$Id)

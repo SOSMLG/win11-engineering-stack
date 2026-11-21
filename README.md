@@ -18,7 +18,7 @@ tree, dry-run before every write.
 </div>
 
 > this changes system settings. run `-DryRun` first, then read
-> [docs/TWEAKS.md](docs/TWEAKS.md) for the exact keys and
+> [docs/RUNBOOK.md](docs/RUNBOOK.md) for the run order and
 > [SECURITY.md](SECURITY.md) for the Ventoy answer file. try it in a VM before a
 > real machine.
 
@@ -54,19 +54,18 @@ or call the profile directly:
 
 | profile | entry point | what it does |
 | --- | --- | --- |
-| `daily` | `scripts/Install.ps1` | OS features, winget apps, TIA/MATLAB paths, VSCodium, Git/gh, Defender exclusions, OmniRoute, theme, configs |
-| `iot` | `install-Win-Iot.ps1` | unattended slim LTSC build, offline-first engines, tweaks, debloat, stock desktop, per-app configs |
+| `daily` | `scripts/Install.ps1` | OS features, winget apps, TIA/MATLAB paths, VSCodium, Git/gh, developer accounts, OmniRoute, theme, configs |
+| `iot` | `install-Win-Iot.ps1` | unattended slim LTSC build, offline-first engines, stock desktop, per-app configs |
 
 both profiles share `config/`. the daily profile uses the modular files under
 `config/opencode`, `config/vscodium`, `config/vesktop`, and `config/vencord`.
-the IoT profile keeps its own `config/defaults.json`, `config/hashes.json`, and
-`config/tweak-matrix.json`. imported reference copies from the old daily repo
-live under `config/daily/`.
+the IoT profile keeps its own `config/defaults.json` and `config/hashes.json`.
+imported reference copies from the old daily repo live under `config/daily/`.
 
 ## daily modules
 
 ```
-preflight  os  packages  apps  engineering  privacy  omniroute  theme  configs  validate
+preflight  os  packages  apps  engineering  developer  omniroute  theme  configs  validate
 ```
 
 run one part with `-Only`:
@@ -83,10 +82,9 @@ the full list is in `install-Win-Iot.ps1 -?`. the ones used most:
 
 | flag | what it does |
 | --- | --- |
-| `-DryRun` | print every write, download, and cleanup, then stop |
-| `-Verify` | read back key tweaks, exit 1 if anything is missing |
+| `-DryRun` | print every write, download, and install step, then stop |
+| `-Verify` | check repo configs and installed state, exit 1 if anything is missing |
 | `-Unattended` | no prompts |
-| `-TweaksOnly` | tweaks on any live machine, no apps or debloat |
 | `-ConfigsOnly` | re-copy user configs, nothing else |
 | `-OfflineDir <path>` | install from staged files with no winget |
 | `-DriverDir <path>` | install drivers from a folder |
@@ -109,9 +107,8 @@ the full list is in `install-Win-Iot.ps1 -?`. the ones used most:
   `Microsoft.PowerToys`, `KeePassXCTeam.KeePassXC`, `LibreWolf.LibreWolf`,
   `ONLYOFFICE.DesktopEditors`, `Vencord.Vesktop`, `Microsoft.WindowsTerminal`,
   `DEVCOM.JetBrainsMonoNerdFont`.
-- **Defender.** stays as shipped. exclusions use `Add-MpPreference` only, so
-  existing entries survive. no call disables real-time protection or replaces
-  the preference set.
+- **Defender.** stays as shipped. no script writes its preferences or disables
+  real-time protection.
 
 ## OmniRoute and OpenCode
 
@@ -131,15 +128,13 @@ because `omniroute` can resolve to a `.cmd` shim on Windows.
 | `Install.ps1`, `Validate.ps1` | one front door for both profiles |
 | `scripts/` | daily modules, shared helpers, read-only validator |
 | `config/` | shared config tree and IoT defaults |
-| `docs/` | tweaks, OpenCode notes, audit, research, runbook |
-| `lib/` | IoT installer modules |
+| `docs/` | OpenCode notes, audit, research, runbook |
 | `ventoy/` | answer files for Ventoy media |
 | app folders | per-app config plus a short note |
 | `tools/` | local token audit helper |
 
 ## docs
 
-- [TWEAKS.md](docs/TWEAKS.md)
 - [OPENCODE.md](docs/OPENCODE.md)
 - [RUNBOOK.md](docs/RUNBOOK.md)
 - [AUDIT.md](docs/AUDIT.md)

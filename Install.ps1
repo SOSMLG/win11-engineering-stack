@@ -11,7 +11,7 @@
 .EXAMPLE
     .\Install.ps1 -Profile daily -DryRun
     .\Install.ps1 -Profile iot -DryRun
-    .\Install.ps1 -Profile iot -TweaksOnly
+    .\Install.ps1 -Profile iot -ConfigsOnly
 #>
 [CmdletBinding()]
 param(

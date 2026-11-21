@@ -5,14 +5,14 @@
 
 .DESCRIPTION
     Modular, idempotent setup for TIA Portal prerequisites, MATLAB paths,
-    VSCodium, Git/gh, privacy tools, OmniRoute, and OpenCode.
+    VSCodium, Git/gh, developer tools, OmniRoute, and OpenCode.
 
 .PARAMETER DryRun
     Print every action without changing files, registry, services, or packages.
 
 .PARAMETER Only
     Run selected modules: all, preflight, os, packages, apps, engineering,
-    privacy, omniroute, theme, configs, validate.
+    developer, omniroute, theme, configs, validate.
 
 .PARAMETER Resume
     Continue after the reboot requested by the OS module.
@@ -29,9 +29,6 @@
 .PARAMETER GitEmail
     Git user.email to set when it is missing.
 
-.PARAMETER PlcAdapter
-    Network adapter name to tune for PROFINET/S7 traffic.
-
 .PARAMETER TiaInstaller
     Path to TIA Portal Start.exe or its folder.
 
@@ -47,7 +44,6 @@ param(
     [string]$SxsPath,
     [string]$GitName,
     [string]$GitEmail,
-    [string]$PlcAdapter,
     [string]$TiaInstaller,
     [string]$MatlabInstaller
 )
@@ -63,7 +59,6 @@ $script:Force = [bool]$Force
 $script:SxsPath = $SxsPath
 $script:GitName = $GitName
 $script:GitEmail = $GitEmail
-$script:PlcAdapter = $PlcAdapter
 $script:TiaInstaller = $TiaInstaller
 $script:MatlabInstaller = $MatlabInstaller
 
@@ -71,7 +66,7 @@ $script:MatlabInstaller = $MatlabInstaller
 $Only = @($Only | ForEach-Object { $_ -split ',' } | ForEach-Object { $_.Trim() } | Where-Object { $_ })
 
 if (-not (Test-Admin) -and -not $DryRun) {
-    $adminModules = @('os', 'engineering', 'privacy')
+    $adminModules = @('os', 'engineering', 'developer')
     $needsAdmin = ($Only.Count -eq 0) -or ($Only -contains 'all') -or (@($Only | Where-Object { $adminModules -contains $_ }).Count -gt 0)
 }
 else {
@@ -94,7 +89,6 @@ if ($needsAdmin) {
     if ($SxsPath) { $arguments += @('-SxsPath', (& $quote $SxsPath)) }
     if ($GitName) { $arguments += @('-GitName', (& $quote $GitName)) }
     if ($GitEmail) { $arguments += @('-GitEmail', (& $quote $GitEmail)) }
-    if ($PlcAdapter) { $arguments += @('-PlcAdapter', (& $quote $PlcAdapter)) }
     if ($TiaInstaller) { $arguments += @('-TiaInstaller', (& $quote $TiaInstaller)) }
     if ($MatlabInstaller) { $arguments += @('-MatlabInstaller', (& $quote $MatlabInstaller)) }
 
@@ -103,14 +97,14 @@ if ($needsAdmin) {
     return
 }
 
-$order = @('preflight', 'os', 'packages', 'apps', 'engineering', 'privacy', 'omniroute', 'theme', 'configs', 'validate')
+$order = @('preflight', 'os', 'packages', 'apps', 'engineering', 'developer', 'omniroute', 'theme', 'configs', 'validate')
 $functions = @{
     preflight   = 'Invoke-Preflight'
     os          = 'Invoke-OS'
     packages    = 'Invoke-Packages'
     apps        = 'Invoke-Apps'
     engineering = 'Invoke-Engineering'
-    privacy     = 'Invoke-Privacy'
+    developer   = 'Invoke-Developer'
     omniroute   = 'Invoke-OmniRoute'
     theme       = 'Invoke-Theme'
     configs     = 'Invoke-Configs'

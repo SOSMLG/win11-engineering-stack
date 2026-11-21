@@ -22,14 +22,11 @@ engines per app, first hit wins: staged `-OfflineDir` files, winget, Chocolatey,
 | runtimes | VC++ 2005 to 2022, .NET 8 Desktop Runtime | |
 | Chocolatey | bootstrapped when missing |
 | context7 MCP, Playwright MCP | `@upstash/context7-mcp@4.4.4`, `@playwright/mcp@0.0.83`, fetched by `npx` the first time OpenCode starts them | |
-| Lenovo ChargeThreshold.exe | downloaded from Lenovo, sha256-pinned, never stored here | |
 
 ## stored in this repo
 | item | where | license (confirm) |
 |---|---|---|
-| O&O ShutUp10++ settings (titus cfg) | `OOSU/ooshutup10.cfg`. the exe itself is not committed | |
 | Darkmatter VSCodium theme | `VSCodium/darkmatter-theme/` | |
 | system24 darkmatter quickcss | `Vesktop/quickcss.css` | |
-| tweak list inspired by Chris Titus Tech | `docs/TWEAKS.md` | |
 
 add the license name and a link for each row. include a copy of any license that requires one.

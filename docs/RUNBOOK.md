@@ -24,11 +24,8 @@ resume command. Run it after the reboot:
 # Apps and editor extensions.
 .\scripts\Install.ps1 -Only apps
 
-# Engineering folders, exclusions, MATLAB env, installer launch.
+# Engineering folders, MATLAB env, installer launch.
 .\scripts\Install.ps1 -Only engineering -TiaInstaller D:\TIA\Start.exe -MatlabInstaller D:\MATLAB\setup.exe
-
-# PLC adapter tuning.
-.\scripts\Install.ps1 -Only os -PlcAdapter "Ethernet"
 
 # Theme and configs only.
 .\scripts\Install.ps1 -Only theme,configs

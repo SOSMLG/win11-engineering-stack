@@ -7,19 +7,20 @@ format follows keep a changelog. versions are git tags like `v0.1.0`.
 - renamed the repo to `win11-engineering-stack`. the old URL still redirects.
 - merged the modular daily installer, the daily config set and their docs into this repo. `Install.ps1` and `Validate.ps1` are the front doors for both profiles.
 - OpenCode now uses one V2 config with `providers` and `permissions`. the old root config is gone.
-- Defender calls are limited to `Add-MpPreference` for exclusions. no script disables real-time protection or replaces the preference set.
+- the deployed opencode config no longer loads context7 and playwright into every message. an existing `~\.config\opencode\opencode.json` is kept (fresh-only), see `docs/OPENCODE.md` to switch.
+- Defender is left as shipped. no script writes its preferences or disables real-time protection.
 - missing winget is a skip with manual IDs in the README, not a failed run.
 - OmniRoute logon tasks use a `.cmd` wrapper so `.cmd` CLI shims work.
+- README and docs describe installs and configs only; tweak and OOSU notes are gone.
 
 ### removed
+- removed every Windows optimization on request. gone: the IoT tweak/debloat phases, `-TweaksOnly`, the tweak matrix, O&O config, Lenovo charge cap, DNS/power/taskbar/privacy tuning, temp cleanup, the daily privacy, power, PLC and Defender-exclusion code, and the unused root `lib/` helpers. these are manual now.
 - dropped the study pack: Zotero, SumatraPDF, MiKTeX, Typst and their configs. Windows Terminal moved into the base app list.
 - dropped Komorebi and whkd, including keybinds, WM config, autostart shortcuts and smoke checks. the desktop is stock Windows now.
 - dropped the ISO builder, autounattend templates and `templates/`. offline installs still work through `-OfflineDir`.
 - deleted the `tests/` suite on request. `-DryRun` is the remaining preflight check.
 
 ### fixed
-- `Win32-Battery` typo (hyphen) in the power-plan fallback. the laptop-by-battery check could never run, so a laptop with no system type got the desktop power plan. now `Win32_Battery`.
-- `-KeepFastStartup` only logged a line, and `powercfg /hibernate off` still ran (which disables fast startup). it now skips the hibernate-off step.
 - `Git/.gitconfig` is deployed fresh-only. it has a blank identity, so overwriting on re-run would have wiped the user's name and email.
 - `Git/.gitconfig` was missing from the repo. the installer logged a skip and the README promised it.
 - `.gitignore` was missing. AGENTS.md says it excludes `*.iso`, `ISO/build/`, `ISO/Offline/`.
@@ -30,14 +31,5 @@ format follows keep a changelog. versions are git tags like `v0.1.0`.
 - `config/opencode.json`: context7 and playwright gated per agent (`web`, `lookup`), pinned versions, agents `lean` `web` `lookup` `docs` `video` `review`, commands `/commit` `/handoff` `/rmslop` `/usage` `/review`, permissions, watcher ignores.
 - `config/AGENTS.global.md` and `config/opencode-skills/` (ffmpeg, latex, powershell 5.1, playwright), deployed fresh-only by the installer.
 - `tools/token-audit/oc_token_audit.py`: measures what OpenCode sends per message, per tool and per MCP server, offline.
-- CI job `opencode-config`: validates both configs, every agent and the skills against the real OpenCode 1.19.4 schema.
-- `tests/static-check.ps1`: wmi class names, script encoding, call-before-define, gitconfig deploy, the KeepFastStartup gate, plus warnings for unused params and missing expected files. wired into `run-all.ps1`.
-- CI (`tests.yml`), release workflow, Dependabot, issue forms, PR template.
-- local pre-commit hook (`.githooks/`): blocks 99 MB+ files and obvious keys, runs tests.
 - `.gitattributes`, `.editorconfig`, `opencode.json` (project permissions, review agent, slash commands).
-- docs: `docs/TWEAKS.md`, `docs/OPENCODE.md`, `CONTRIBUTING.md`, `SECURITY.md`, `THIRD-PARTY-NOTICES.md`.
-
-### changed
-- the deployed opencode config no longer loads context7 and playwright into every message. an existing `~\.config\opencode\opencode.json` is kept (fresh-only), see `docs/OPENCODE.md` to switch.
-- README split into a short front page and `docs/TWEAKS.md`. config table now lists the real file names and which configs overwrite on re-run.
-- AGENTS.md: workflow rules for agents, and the OOSU note now says the exe is not committed.
+- docs: `docs/OPENCODE.md`, `CONTRIBUTING.md`, `SECURITY.md`, `THIRD-PARTY-NOTICES.md`.

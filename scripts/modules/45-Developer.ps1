@@ -59,18 +59,6 @@ function Set-GhConfiguration {
         return
     }
 
-    $current = (& gh config get telemetry 2>$null) -join ''
-    if ($current -eq 'disabled') {
-        Write-Skip 'gh telemetry already disabled.'
-    }
-    elseif ($script:DryRun) {
-        Write-Detail '[dry-run] gh config set telemetry disabled'
-    }
-    else {
-        Invoke-External -FilePath 'gh' -ArgumentList @('config', 'set', 'telemetry', 'disabled') -AllowFailure | Out-Null
-        Write-Ok 'gh telemetry disabled.'
-    }
-
     $protocol = (& gh config get git_protocol 2>$null) -join ''
     if ($protocol -eq 'ssh') {
         Write-Skip 'gh git protocol already ssh.'
@@ -99,23 +87,6 @@ function Set-GhConfiguration {
     }
     else {
         Write-Skip 'No Ed25519 SSH key found. Create one with ssh-keygen -t ed25519 -C "your own label"'
-    }
-}
-
-function Set-WindowsPrivacy {
-    $values = @(
-        @('HKCU:\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo', 'Enabled', 0),
-        @('HKCU:\Software\Microsoft\Windows\CurrentVersion\Privacy', 'TailoredExperiencesWithDiagnosticDataEnabled', 0),
-        @('HKCU:\Software\Microsoft\Windows\CurrentVersion\Privacy', 'PublishUserActivities', 0),
-        @('HKCU:\Software\Microsoft\Windows\CurrentVersion\Privacy', 'UploadUserActivities', 0),
-        @('HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager', 'SoftLandingEnabled', 0),
-        @('HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager', 'SubscribedContent-338389Enabled', 0),
-        @('HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager', 'SystemPaneSuggestionsEnabled', 0),
-        @('HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection', 'AllowTelemetry', 0)
-    )
-
-    foreach ($entry in $values) {
-        Set-RegistryValue -Path $entry[0] -Name $entry[1] -Value $entry[2] -Type DWord
     }
 }
 
@@ -199,13 +170,12 @@ function Set-LibreWolfProfiles {
     Write-Detail 'Sign in to each profile separately; never reuse a personal account in the uni or social profile.'
 }
 
-function Invoke-Privacy {
-    Write-Step 'Privacy: Git, GitHub, Windows, browsers'
+function Invoke-Developer {
+    Write-Step 'Developer: Git, GitHub, and local accounts'
     Assert-Admin
 
     Set-GitConfiguration
     Set-GhConfiguration
-    Set-WindowsPrivacy
     Set-KeepassVaultFolder
     Set-LibreWolfProfiles
 }

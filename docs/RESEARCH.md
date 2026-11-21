@@ -10,9 +10,8 @@ most services. That breaks three requirements at once:
 - winget/App Installer cannot be installed reliably.
 
 `10-OS` therefore reads the feature state first and reports `Unknown` instead of
-claiming success. The recommended base is a stock Windows 11 LTSC image built
-with WinUtil/MicroWin, keeping Defender, WinSxS, Windows Update, and App
-Installer.
+claiming success. The recommended base is stock Windows 11 LTSC media with
+Defender, WinSxS, Windows Update, and App Installer intact.
 
 ## TIA Portal V18
 
@@ -34,8 +33,6 @@ features and firewall rule, but cannot validate Siemens' support matrix.
   Domain and Private profiles only.
 - PROFINET DCP and RT are Layer 2 (EtherType `0x8892`). Windows Firewall does not
   filter them, so no firewall rule can fix a bad NIC or switch configuration.
-- NIC tuning disables EEE, Green Ethernet, interrupt moderation, and power
-  management when the driver exposes those settings.
 - The PG/PC interface must point at the physical PLC adapter. That is a manual
   TIA Portal step.
 
@@ -43,12 +40,8 @@ features and firewall rule, but cannot validate Siemens' support matrix.
 
 There is no trustworthy lightweight FOSS resident antivirus for Windows.
 Bitdefender Free is closed source; Avast/AVG bundle unwanted components. The
-setup keeps Defender, disables sample submission and cloud reporting, adds path
-exclusions for Siemens/MATLAB/Python workspaces, and leaves real-time protection
-on.
-
-Exclusions are a performance trade-off, not a security feature. Add paths only
-for folders that contain large vendor or generated files.
+setup keeps Defender as installed and leaves real-time protection, reporting,
+scans, and exclusions untouched.
 
 ## VSCodium
 
@@ -70,14 +63,14 @@ for folders that contain large vendor or generated files.
   hard read boundary. Use a real `.git` plus `.gitignore`, `watcher.ignore`, and
   permission deny rules.
 
-## Privacy tools
+## Local accounts
 
 - KeePassXC for the vault. The script creates the folder, never a database.
 - LibreWolf profiles `personal`, `uni`, and `social`, each with its own cookie
   jar and sign-in. LibreWolf is already hardened; the script does not add
   prefs that could break sites. Ungoogled Chromium is a valid alternative, but
   LibreWolf's profile isolation and update path are simpler on Windows.
-- GitHub CLI telemetry is disabled and the Git protocol is set to SSH.
+- GitHub CLI uses SSH for Git; its other defaults stay as shipped.
 
 ## Desktop apps
 
