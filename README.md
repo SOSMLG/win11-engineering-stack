@@ -86,7 +86,8 @@ the full list is in `install-Win-Iot.ps1 -?`. the ones used most:
 | `-Verify` | check repo configs and installed state, exit 1 if anything is missing |
 | `-Unattended` | no prompts |
 | `-ConfigsOnly` | re-copy user configs, nothing else |
-| `-OfflineDir <path>` | install from staged files with no winget |
+| `-OfflineDir <path>` | install from staged files; winget is not required |
+| `-NoWingetBootstrap` | skip App Installer bootstrap; staged and direct sources still apply |
 | `-DriverDir <path>` | install drivers from a folder |
 | `-Only`, `-SkipApps` | filter the app list |
 | `-Fixes` | repair DNS, winsock, and the update stack |
@@ -107,6 +108,8 @@ the full list is in `install-Win-Iot.ps1 -?`. the ones used most:
   `Microsoft.PowerToys`, `KeePassXCTeam.KeePassXC`, `LibreWolf.LibreWolf`,
   `ONLYOFFICE.DesktopEditors`, `Vencord.Vesktop`, `Microsoft.WindowsTerminal`,
   `DEVCOM.JetBrainsMonoNerdFont`.
+- **IoT package sources.** staged files first, then winget, then GitHub releases or
+  direct vendor URLs. no third-party package manager is bootstrapped.
 - **Defender.** stays as shipped. no script writes its preferences or disables
   real-time protection.
 

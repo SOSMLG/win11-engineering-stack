@@ -26,7 +26,4 @@ function Invoke-Packages {
 
     $scoop = Get-CommandPath 'scoop'
     if ($scoop) { Write-Detail "scoop: $scoop" } else { Write-Skip 'scoop not installed (optional).' }
-
-    $choco = Get-CommandPath 'choco'
-    if ($choco) { Write-Detail "choco: $choco" } else { Write-Skip 'chocolatey not installed (optional).' }
 }

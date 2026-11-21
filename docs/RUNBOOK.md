@@ -71,8 +71,8 @@ missing but WinSxS exists, mount the matching ISO and pass
 ### winget is missing
 
 The apps module skips winget packages and says so. Install App Installer from
-the Microsoft Store or rebuild the image with it. Do not add a silent Scoop
-bootstrap; it hides the failure.
+the Microsoft Store or rebuild the image with it. Do not add a silent package
+manager bootstrap; it hides the failure.
 
 ### OmniRoute does not start
 

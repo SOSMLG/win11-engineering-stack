@@ -47,7 +47,7 @@
             <FirstLogonCommands>
                 <SynchronousCommand wcm:action="add">
                     <CommandLine>powershell -NoProfile -ExecutionPolicy Bypass -File "C:\Setup\install-Win-Iot.ps1" -Unattended</CommandLine>
-                    <Description>Win-Iot apps and configs (choco + github + staged gaps)</Description>
+                    <Description>Win-Iot apps and configs (staged + winget + github + direct)</Description>
                     <Order>1</Order>
                 </SynchronousCommand>
             </FirstLogonCommands>

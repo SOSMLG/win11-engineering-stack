@@ -18,6 +18,7 @@ format follows keep a changelog. versions are git tags like `v0.1.0`.
 
 ### removed
 - removed every Windows optimization on request. gone: the IoT tweak/debloat phases, `-TweaksOnly`, the tweak matrix, O&O config, Lenovo charge cap, DNS/power/taskbar/privacy tuning, temp cleanup, the daily privacy, power, PLC and Defender-exclusion code, and the unused root `lib/` helpers. these are manual now.
+- removed the third-party package-manager bootstrap and fallback engine from the IoT installer. package sources are now staged files, winget, GitHub releases, and direct vendor URLs.
 - dropped the study pack: Zotero, SumatraPDF, MiKTeX, Typst and their configs. Windows Terminal moved into the base app list.
 - dropped Komorebi and whkd, including keybinds, WM config, autostart shortcuts and smoke checks. the desktop is stock Windows now.
 - dropped the ISO builder, autounattend templates and `templates/`. offline installs still work through `-OfflineDir`.

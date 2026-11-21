@@ -10,8 +10,8 @@ VM first.
   `-Unattended` it also sets the CurrentUser execution policy to RemoteSigned.
 - **downloads are not hash-pinned.** `config/hashes.json` is empty. `-SkipHashVerify`
   exists, but there is nothing pinned to skip right now.
-- **Chocolatey bootstrap.** if choco is missing the installer downloads and runs
-  `https://community.chocolatey.org/install.ps1` with no hash check. `-NoChocoBootstrap` skips it.
+- **bounded package sources.** the IoT installer uses staged files, winget, GitHub
+  releases, and direct vendor URLs. it does not bootstrap a third-party package manager.
 - **the answer files** (`ventoy/script/*.xml`) create a local administrator
   named `My Pc` with a **blank password** and log it in once automatically. Windows normally limits
   blank-password accounts to console logon, but set a password after first boot if the machine

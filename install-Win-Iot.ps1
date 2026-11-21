@@ -6,7 +6,8 @@
   on first boot. PS 5.1, stock Windows desktop, Helium, VSCodium.
   No extra shell, no extra window manager. Stock colors everywhere.
   Engines per app, first hit wins: staged -OfflineDir files, winget,
-  choco, github releases. Log lands in C:\Windows\Logs\Win-Iot-Setup either way.
+  github releases, direct vendor URLs. Log lands in C:\Windows\Logs\Win-Iot-Setup
+  either way.
 .EXAMPLE
   powershell -ExecutionPolicy Bypass -File install-Win-Iot.ps1
   powershell -ExecutionPolicy Bypass -File install-Win-Iot.ps1 -Unattended -OfflineDir D:\Offline
@@ -27,7 +28,6 @@ param(
   [switch]$IncludeOptional,
   [switch]$Unattended,
   [switch]$NoWingetBootstrap,
-  [switch]$NoChocoBootstrap,
   [string]$OfflineDir = '',
   [string]$LogDir = 'C:\Windows\Logs\Win-Iot-Setup',
   [string]$DriverDir = '',
@@ -424,9 +424,9 @@ function Ensure-Winget {
   Log 'winget: missing (normal here). Bootstrapping...'
   $tmp = Join-Path $env:TEMP 'winget-bootstrap'; New-Item -ItemType Directory -Force -Path $tmp | Out-Null
   # appxsvc/clipsvc gutted or disabled on tiny10 = Add-AppxPackage hangs forever. try to wake them.
-  # stripped AppX on purpose = winget impossible. bail fast, OfflineDir path below covers apps.
+  # stripped AppX on purpose = winget impossible. bail fast, staged/direct paths below cover apps.
   if (-not (Get-Service AppXSvc -EA SilentlyContinue)) {
-    Log 'winget: impossible here (AppXSvc stripped). use -NoWingetBootstrap -OfflineDir <path>.'
+    Log 'winget: impossible here (AppXSvc stripped). staged files and direct sources still apply.'
     return $false
   }
   foreach ($svc in @('AppXSvc','ClipSVC')) {
@@ -522,7 +522,7 @@ function Ensure-Winget {
     }
     $env:Path += ';' + (Join-Path $env:LOCALAPPDATA 'Microsoft\WindowsApps')
     if (Test-WingetRuns) { Log 'winget: installed.'; return $true }
-    Log 'winget staged but will not execute here (AppX gutted). using choco/offline instead.'
+    Log 'winget staged but will not execute here (AppX gutted). using staged files and direct sources instead.'
     return $false
   } catch { Log "WARN winget bootstrap failed: $_. Install App Installer manually, then re-run."; return $false }
   finally { $ProgressPreference = $oldProg }
@@ -534,65 +534,11 @@ if (-not $ConfigsOnly) {
   } else { $hasWinget = Ensure-Winget }
 } else { $hasWinget = $false }
 
-# ---------- 2a. choco. plain ps1 + exe/msi, no appx. this is the slick path on stripped images. ----------
-function Ensure-Chocolatey {
-  if (Get-Command choco -EA SilentlyContinue) { Log 'choco: found.'; return $true }
-  if ($NoChocoBootstrap) { Log 'choco: missing, bootstrap skipped (-NoChocoBootstrap).'; return $false }
-  if (-not $isAdmin) { Log 'choco: missing, needs admin to bootstrap. re-run as admin.'; return $false }
-  if (-not $online) { Log 'choco: offline, bootstrap skipped. connect or stage -OfflineDir.'; return $false }
-  Log 'choco: missing. Bootstrapping from community.chocolatey.org (needs net, 2-5 min)...'
-  $oldProg = $ProgressPreference; $ProgressPreference = 'SilentlyContinue'
-  try {
-    # the fetch is the flaky part. two more shots before giving up.
-    $body = $null
-    for ($i = 1; $i -le 3 -and -not $body; $i++) {
-      try {
-        $body = (New-Object Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')
-        if (-not $body -or $body.Length -lt 1024) { throw 'install.ps1 looks truncated' }
-      } catch {
-        Log "  WARN choco bootstrap download attempt $i failed: $($_.Exception.Message)"
-        $body = $null
-        if ($i -lt 3) { Start-Sleep -Seconds (2 * $i) }
-      }
-    }
-    if (-not $body) { throw 'could not fetch install.ps1 after 3 tries' }
-    # same script, executed without Invoke-Expression. PSSA sleeps better, behavior identical.
-    & ([scriptblock]::Create($body))
-    Refresh-Path
-    if (Get-Command choco -EA SilentlyContinue) { Log 'choco: installed.'; return $true }
-    Log 'WARN choco bootstrap: installer ran but choco not on PATH.'; return $false
-  } catch { Log "WARN choco bootstrap failed: $_. Install from chocolatey.org manually, then re-run."; return $false }
-  finally { $ProgressPreference = $oldProg }
-}
-# winget id -> community package. all 11 verified live on community.chocolatey.org.
-# a bad name fails safe: choco errors, id lands in the retry list.
-# no choco package: helium, all vcredists, dotnet. vesktop, telegram, qbittorrent,
-# obs, git, vscodium, opencode ride github.
-# 'python' tracks latest 3.x (3.15 at last check) while the winget id says 3.12. close enough.
-$chocoMap = @{
-  'Git.Git' = 'git'
-  'OpenJS.NodeJS.LTS' = 'nodejs-lts'
-  'Python.Python.3.12' = 'python'
-  '7zip.7zip' = '7zip'
-  'VideoLAN.VLC' = 'vlc'
-  'qBittorrent.qBittorrent' = 'qbittorrent'
-  'OBSProject.OBSStudio' = 'obs-studio'
-  'Telegram.TelegramDesktop' = 'telegram'
-  'VSCodium.VSCodium' = 'vscodium'
-  'WiresharkFoundation.Wireshark' = 'wireshark'
-  'SST.opencode' = 'opencode'
-}
-if (-not $ConfigsOnly) {
-  if ($DryRun) {
-    $hasChoco = [bool](Get-Command choco -EA SilentlyContinue)
-    if ($hasChoco) { Log 'choco: found.' } else { Log 'choco: missing (dry-run, bootstrap skipped).' }
-  } else { $hasChoco = Ensure-Chocolatey }
-} else { $hasChoco = $false }
-
-# github-direct. no manager at all, straight off release pages. patterns verified
-# against the live releases api. x64 only, this box is x64. helium has no assets
-# on its releases page, so it stays staged-only. unauthenticated api = 60 calls/hr,
-# this runs max 9 per pass. cached under TEMP so re-runs skip the download.
+# ---------- 2a. github-direct. no package manager, straight off release pages. ----------
+# patterns verified against the live releases api. x64 only, this box is x64.
+# helium has no assets on its releases page, so it stays staged-only.
+# unauthenticated api = 60 calls/hr, this runs max 9 per pass. cached under TEMP
+# so re-runs skip the download.
 $gitMap = @{
   'Vencord.Vesktop'        = @{ repo='Vencord/Vesktop'; pattern='Vesktop-Setup-*.exe' }
   'Telegram.TelegramDesktop' = @{ repo='telegramdesktop/tdesktop'; pattern='td-setup-win-x64-*.exe' }
@@ -871,14 +817,6 @@ function Install-App($id) {
     if ($exit -eq 0) { Log '  ok'; return $true }
     Log "  WARN exit=$exit, falling through"
   }
-  if ($hasChoco -and $chocoMap.ContainsKey($id)) {
-    # NOTE native exe, exit code is the truth. try/catch alone lies.
-    $script:appAttempted[$id] = $true
-    Log "choco install: $($chocoMap[$id]) (for $id)"
-    $exit = Invoke-Native { choco install $chocoMap[$id] -y --no-progress }
-    if ($exit -eq 0) { Log '  ok'; return $true }
-    Log "  WARN exit=$exit, falling through"
-  }
   if ($online -and $gitMap.ContainsKey($id)) {
     $script:appAttempted[$id] = $true
     Log "github release: $id"
@@ -893,12 +831,12 @@ function Install-App($id) {
   }
   if ($off) {
     Log "  SKIP $id (staged but no -Unattended. re-run with -Unattended or run $($off.Name) by hand)"
-  } elseif (-not $chocoMap.ContainsKey($id) -and -not $gitMap.ContainsKey($id) -and -not $directMap.ContainsKey($id)) {
-    Log "  SKIP $id (no choco/github source. stage it in -OfflineDir on a normal pc)"
+  } elseif (-not $gitMap.ContainsKey($id) -and -not $directMap.ContainsKey($id)) {
+    Log "  SKIP $id (no github/direct fallback. stage it in -OfflineDir or retry with winget)"
   }
   return $false
 }
-if ((-not $ConfigsOnly) -and (Should-Run 'apps') -and ($DryRun -or $hasWinget -or $hasChoco -or ($OfflineDir -and (Test-Path $OfflineDir)))) {
+if ((-not $ConfigsOnly) -and (Should-Run 'apps') -and ($DryRun -or $online -or ($OfflineDir -and (Test-Path $OfflineDir)))) {
   Start-Phase 'apps'
   $appTotal = $appsAll.Count
   $appIdx = 0
@@ -927,19 +865,12 @@ if ((-not $ConfigsOnly) -and (Should-Run 'apps') -and ($DryRun -or $hasWinget -o
     }
   }
   if ($Only.Count) { Log 'bulk upgrades skipped (selective -Only run).' }
-  elseif ($DryRun) { Log '[dry-run] would upgrade packages (winget upgrade --all / choco upgrade all).' }
-  else {
-    if ($hasWinget -and $online) {
-      $exit = Invoke-Native { winget upgrade --all --silent --accept-source-agreements --accept-package-agreements }
-      if ($exit -eq 0) { Log '  winget upgrade done.' } else { Log "  WARN winget upgrade exit=$exit" }
-    }
-    elseif ($hasWinget) { Log 'SKIP winget upgrade (offline).' }
-    if ($hasChoco -and $online) {
-      $exit = Invoke-Native { choco upgrade all -y --no-progress }
-      if ($exit -eq 0) { Log '  choco upgrade done.' } else { Log "  WARN choco upgrade exit=$exit" }
-    }
-    elseif ($hasChoco) { Log 'SKIP choco upgrade (offline).' }
+  elseif ($DryRun) { Log '[dry-run] would upgrade packages (winget upgrade --all).' }
+  elseif ($hasWinget -and $online) {
+    $exit = Invoke-Native { winget upgrade --all --silent --accept-source-agreements --accept-package-agreements }
+    if ($exit -eq 0) { Log '  winget upgrade done.' } else { Log "  WARN winget upgrade exit=$exit" }
   }
+  elseif ($hasWinget) { Log 'SKIP winget upgrade (offline).' }
   Stop-Phase
   # failures keep the phase open so -Idempotent re-runs retry them. an empty
   # list (typo in -Only, everything -SkipApps'd) stays open too, on purpose.
@@ -947,7 +878,7 @@ if ((-not $ConfigsOnly) -and (Should-Run 'apps') -and ($DryRun -or $hasWinget -o
   elseif ($appsAll.Count -eq 0) { Log '  nothing selected, apps phase left open.' }
   else { Log "  apps left open ($($failed.Count) failed) - re-run to retry." }
 } elseif ($ConfigsOnly) { Log 'Configs-only: apps skipped.' } else {
-  Log 'SKIP installs (no winget, no choco, no -OfflineDir). Get net for choco, or stage files in -OfflineDir - nothing marked failed yet.'
+  Log 'SKIP installs (no network, no winget, no -OfflineDir). Connect for winget/github/direct sources, or stage files in -OfflineDir - nothing marked failed yet.'
 }
 
 # fresh installs don't land on PATH in this session. re-read it or python/codium are "missing".
