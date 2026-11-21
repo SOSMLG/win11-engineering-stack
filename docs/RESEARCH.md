@@ -74,8 +74,8 @@ scans, and exclusions untouched.
 
 ## Desktop apps
 
-- MercuryGram Desktop is a Telegram Desktop fork. The portable Windows build is
-  pinned to 7.4.4.1 with SHA256
+- Telegram Desktop is installed from winget. MercuryGram Desktop is the manual
+  portable alternative: v7.4.4.1, SHA256
   `BCE4A20B0389095CCD5DF95C24FC0F9CA23D4EAF758F259986AC579F548F1774`.
   `tdata` stays next to the executable.
 - Vesktop uses `%APPDATA%\vesktop\settings.json`; Vencord uses
@@ -91,7 +91,7 @@ scans, and exclusions untouched.
 | Microsoft Office | ONLYOFFICE | Installed; set defaults manually. |
 | Chrome/Edge for personal use | LibreWolf | Separate profiles, no Google sync. |
 | Discord desktop | Vesktop | Vencord, lower overhead, no telemetry plugins. |
-| Telegram Desktop | MercuryGram | Portable, pinned release. |
+| Telegram Desktop | MercuryGram (manual) | Portable, pinned release. |
 | WinRAR | 7-Zip | No nag screen. |
 | Browser password store | KeePassXC | Local vault, no cloud. |
 | Flow Launcher | PowerToys Run | One less background app. |

@@ -12,6 +12,7 @@ engines per app, first hit wins: staged `-OfflineDir` files, winget, Chocolatey,
 | VSCodium | `VSCodium.VSCodium` | |
 | Vesktop | `Vencord.Vesktop` | |
 | Telegram Desktop | `Telegram.TelegramDesktop` | |
+| MercuryGram (manual) | v7.4.4.1 portable, hash in `docs/RESEARCH.md` | |
 | qBittorrent, VLC, OBS Studio | `qBittorrent.qBittorrent`, `VideoLAN.VLC`, `OBSProject.OBSStudio` | |
 | Git, Node.js LTS, Python 3.12, 7-Zip | `Git.Git`, `OpenJS.NodeJS.LTS`, `Python.Python.3.12`, `7zip.7zip` | |
 | Wireshark | `WiresharkFoundation.Wireshark` | |
