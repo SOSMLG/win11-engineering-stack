@@ -7,7 +7,8 @@ VM first.
 
 ## what to know before running it
 - `Setup.cmd` self-elevates. the installer is normally run with `-ExecutionPolicy Bypass`. without
-  `-Unattended` it also sets the CurrentUser execution policy to RemoteSigned.
+  `-Unattended` it also sets the CurrentUser execution policy to RemoteSigned. `-DryRun` skips that write.
+  logs and a report are still written in dry-run.
 - **downloads are not hash-pinned.** `config/hashes.json` is empty. `-SkipHashVerify`
   exists, but there is nothing pinned to skip right now.
 - **bounded package sources.** the IoT installer uses staged files, winget, GitHub

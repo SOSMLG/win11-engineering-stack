@@ -82,7 +82,7 @@ scans, and exclusions untouched.
   `%APPDATA%\vesktop\settings\settings.json`. Close Vesktop before editing,
   because it rewrites settings on exit.
 - ONLYOFFICE default associations cannot be set silently. Windows 11 protects
-  `UserChoice`; the script points at `ms-settings:defaultapps`.
+  `UserChoice`; set them by hand in Settings.
 
 ## FOSS replacements
 

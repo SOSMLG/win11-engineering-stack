@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450" role="img" aria-labelledby="title desc">
+  <title id="title">IoT LTSC profile preview</title>
+  <desc id="desc">Slim Windows IoT LTSC installer with staged sources, winget fallback, and read-only verification.</desc>
+  <defs>
+    <linearGradient id="iot-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#16181D"/>
+      <stop offset="100%" stop-color="#202329"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="450" rx="16" fill="url(#iot-bg)"/>
+  <rect x="1" y="1" width="798" height="448" rx="15" fill="none" stroke="#30343B" stroke-width="2"/>
+  <g stroke="#30343B" stroke-width="1" opacity="0.35">
+    <path d="M0 75 H800 M0 150 H800 M0 225 H800 M0 300 H800 M0 375 H800"/>
+    <path d="M80 0 V450 M160 0 V450 M240 0 V450 M320 0 V450 M400 0 V450 M480 0 V450 M560 0 V450 M640 0 V450 M720 0 V450"/>
+  </g>
+  <rect x="40" y="42" width="5" height="54" rx="2.5" fill="#D2992F"/>
+  <text x="62" y="70" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="26" font-weight="700" fill="#E8A33D">IOT LTSC</text>
+  <text x="62" y="94" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14" fill="#9A9AA2">slim offline-first profile</text>
+
+  <g transform="translate(40,130)">
+    <rect width="720" height="250" rx="12" fill="#202329" stroke="#30343B" stroke-width="2"/>
+    <path d="M0 12 A12 12 0 0 1 12 0 H708 A12 12 0 0 1 720 12 V36 H0 Z" fill="#26292F"/>
+    <circle cx="22" cy="18" r="5" fill="#8FB57A"/>
+    <circle cx="40" cy="18" r="5" fill="#D2992F"/>
+    <circle cx="58" cy="18" r="5" fill="#9A9AA2"/>
+    <text x="360" y="23" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" fill="#9A9AA2">install-Win-Iot.ps1</text>
+    <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14">
+      <text x="24" y="72" fill="#E8A33D">$</text><text x="44" y="72" fill="#D8D3C8">Install.ps1 -Profile iot -DryRun</text>
+      <text x="24" y="102" fill="#E8A33D">$</text><text x="44" y="102" fill="#D8D3C8">Install.ps1 -Profile iot -OfflineDir D:\stage</text>
+      <text x="24" y="132" fill="#E8A33D">$</text><text x="44" y="132" fill="#D8D3C8">Validate.ps1 -Profile iot</text>
+      <text x="24" y="170" fill="#8FB57A">OK</text><text x="58" y="170" fill="#9A9AA2">staged files before winget</text>
+      <text x="24" y="196" fill="#8FB57A">OK</text><text x="58" y="196" fill="#9A9AA2">no third-party bootstrap</text>
+      <text x="24" y="222" fill="#8FB57A">OK</text><text x="58" y="222" fill="#9A9AA2">read-only verify</text>
+    </g>
+  </g>
+</svg>

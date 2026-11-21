@@ -252,7 +252,8 @@ if ($Verify) {
   if (Test-Path $vsSet) {
     try {
       $vsJson = Get-Content $vsSet -Raw | ConvertFrom-Json
-      $theme = Get-PropValue $vsJson 'workbench.colorTheme' ''
+      $themeProp = $vsJson.PSObject.Properties['workbench.colorTheme']
+      $theme = if ($null -eq $themeProp) { '' } else { [string]$themeProp.Value }
       if ($theme -eq 'Graphite Amber') { Log '  ok: vscodium graphite amber theme' }
       else { Log "  MISS: vscodium theme is $theme"; $miss++ }
     } catch { Log "  MISS: vscodium settings are not valid JSON"; $miss++ }
@@ -1140,7 +1141,7 @@ if ((-not $ConfigsOnly) -and (-not $DryRun) -and ($failed.Count -eq 0)) {
   Log '  installer caches purged.'
 }
 Log "Log: $LogFile"
-if ($DryRun) { Log 'Dry-run finished. nothing changed, nothing marked done.' }
+if ($DryRun) { Log 'Dry-run finished. system state was not changed; logs and the report were written.' }
 elseif ($ConfigsOnly) { Log 'Configs-only done.' }
 else {
 Log 'NEXT:'

@@ -3,7 +3,7 @@
 ## First run
 
 ```powershell
-cd C:\Users\Admin\github\win11-engineering-stack
+cd path\to\win11-engineering-stack
 .\scripts\Install.ps1 -DryRun
 .\scripts\Install.ps1
 ```
@@ -121,7 +121,7 @@ Rerun `.\scripts\Install.ps1 -Only engineering` after installing MATLAB. It sets
 
 ### LibreWolf profile creation fails
 
-Close every LibreWolf window, then rerun `-Only privacy`. The profile name must
+Close every LibreWolf window, then rerun `-Only developer`. The profile name must
 not already exist in `%APPDATA%\LibreWolf\profiles.ini`.
 
 ## Rollback

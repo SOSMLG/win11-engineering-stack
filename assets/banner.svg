@@ -32,7 +32,7 @@
     <path d="M0 12 A12 12 0 0 1 12 0 H420 A12 12 0 0 1 432 12 V38 H0 Z" fill="#26292F"/>
     <circle cx="24" cy="19" r="5" fill="#8FB57A"/>
     <circle cx="42" cy="19" r="5" fill="#D2992F"/>
-    <circle cx="60" cy="19" r="5" fill="#C97064"/>
+    <circle cx="60" cy="19" r="5" fill="#9A9AA2"/>
     <text x="216" y="24" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" fill="#9A9AA2">engineering console</text>
 
     <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14">
