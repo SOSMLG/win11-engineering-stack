@@ -1,0 +1,70 @@
+{
+  "telemetry.telemetryLevel": "off",
+  "update.mode": "manual",
+  "update.showReleaseNotes": false,
+  "editor.fontFamily": "JetBrainsMono Nerd Font Mono, Cascadia Mono, Consolas",
+  "editor.fontLigatures": true,
+  "editor.fontSize": 12,
+  "editor.lineHeight": 1.6,
+  "editor.minimap.enabled": false,
+  "editor.renderWhitespace": "boundary",
+  "editor.formatOnSave": true,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active",
+  "files.autoSave": "onFocusChange",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/.mypy_cache": true,
+    "**/.ruff_cache": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.git": true,
+    "**/Siemens": true,
+    "**/MATLAB": true,
+    "**/datasets": true,
+    "**/.venv": true,
+    "**/site-packages": true
+  },
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.git/objects/**": true,
+    "**/Siemens/**": true,
+    "**/MATLAB/**": true,
+    "**/datasets/**": true,
+    "**/.venv/**": true,
+    "**/__pycache__/**": true
+  },
+  "python.languageServer": "None",
+  "python.defaultInterpreterPath": "python",
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.diagnosticMode": "openFilesOnly",
+  "python.analysis.indexing": false,
+  "python.analysis.autoImportCompletions": true,
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports.ruff": "explicit"
+    }
+  },
+  "ruff.lineLength": 100,
+  "notebook.formatOnSave.enabled": true,
+  "workbench.colorTheme": "Catppuccin Mocha",
+  "workbench.iconTheme": "catppuccin-mocha",
+  "workbench.startupEditor": "none",
+  "workbench.enableExperiments": false,
+  "workbench.tips.enabled": false,
+  "workbench.editor.enablePreview": false,
+  "window.titleBarStyle": "custom",
+  "window.menuBarVisibility": "toggle",
+  "security.workspace.trust.enabled": true,
+  "security.workspace.trust.untrustedFiles": "prompt",
+  "security.workspace.trust.startupPrompt": "always",
+  "git.autofetch": false,
+  "git.enableSmartCommit": true,
+  "git.confirmSync": false
+}

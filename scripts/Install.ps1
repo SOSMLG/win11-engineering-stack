@@ -1,0 +1,229 @@
+#requires -Version 5.1
+<#
+.SYNOPSIS
+    Installs and configures a Windows 11 engineering workstation.
+
+.DESCRIPTION
+    Modular, idempotent setup for TIA Portal prerequisites, MATLAB paths,
+    VSCodium, Git/gh, privacy tools, OmniRoute, and OpenCode.
+
+.PARAMETER DryRun
+    Print every action without changing files, registry, services, or packages.
+
+.PARAMETER Only
+    Run selected modules: all, preflight, os, packages, apps, engineering,
+    privacy, omniroute, theme, configs, validate.
+
+.PARAMETER Resume
+    Continue after the reboot requested by the OS module.
+
+.PARAMETER Force
+    Overwrite configs instead of merging and rerun completed modules.
+
+.PARAMETER SxsPath
+    Path to the ISO sources\sxs folder, used when .NET 3.5 payload is missing.
+
+.PARAMETER GitName
+    Git user.name to set when it is missing.
+
+.PARAMETER GitEmail
+    Git user.email to set when it is missing.
+
+.PARAMETER PlcAdapter
+    Network adapter name to tune for PROFINET/S7 traffic.
+
+.PARAMETER TiaInstaller
+    Path to TIA Portal Start.exe or its folder.
+
+.PARAMETER MatlabInstaller
+    Path to MATLAB setup.exe or its folder.
+#>
+[CmdletBinding()]
+param(
+    [switch]$DryRun,
+    [string[]]$Only = @(),
+    [switch]$Resume,
+    [switch]$Force,
+    [string]$SxsPath,
+    [string]$GitName,
+    [string]$GitEmail,
+    [string]$PlcAdapter,
+    [string]$TiaInstaller,
+    [string]$MatlabInstaller
+)
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
+
+$libPath = Join-Path $PSScriptRoot 'lib\Common.ps1'
+. $libPath
+
+$script:DryRun = [bool]$DryRun
+$script:Force = [bool]$Force
+$script:SxsPath = $SxsPath
+$script:GitName = $GitName
+$script:GitEmail = $GitEmail
+$script:PlcAdapter = $PlcAdapter
+$script:TiaInstaller = $TiaInstaller
+$script:MatlabInstaller = $MatlabInstaller
+
+# -File passes "apps,engineering" as one string; accept both forms.
+$Only = @($Only | ForEach-Object { $_ -split ',' } | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+
+if (-not (Test-Admin) -and -not $DryRun) {
+    $adminModules = @('os', 'engineering', 'privacy')
+    $needsAdmin = ($Only.Count -eq 0) -or ($Only -contains 'all') -or (@($Only | Where-Object { $adminModules -contains $_ }).Count -gt 0)
+}
+else {
+    $needsAdmin = $false
+}
+
+if ($needsAdmin) {
+    Write-Host 'Elevation required. Relaunching with UAC...' -ForegroundColor Yellow
+
+    $quote = {
+        param([string]$Value)
+        if ($Value -match '\s') { return '"' + $Value + '"' }
+        return $Value
+    }
+
+    $arguments = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (& $quote $PSCommandPath))
+    if ($Only.Count -gt 0) { $arguments += @('-Only', (& $quote ($Only -join ','))) }
+    if ($Resume) { $arguments += '-Resume' }
+    if ($Force) { $arguments += '-Force' }
+    if ($SxsPath) { $arguments += @('-SxsPath', (& $quote $SxsPath)) }
+    if ($GitName) { $arguments += @('-GitName', (& $quote $GitName)) }
+    if ($GitEmail) { $arguments += @('-GitEmail', (& $quote $GitEmail)) }
+    if ($PlcAdapter) { $arguments += @('-PlcAdapter', (& $quote $PlcAdapter)) }
+    if ($TiaInstaller) { $arguments += @('-TiaInstaller', (& $quote $TiaInstaller)) }
+    if ($MatlabInstaller) { $arguments += @('-MatlabInstaller', (& $quote $MatlabInstaller)) }
+
+    $hostExe = (Get-Process -Id $PID).Path
+    Start-Process -FilePath $hostExe -Verb RunAs -ArgumentList ($arguments -join ' ')
+    return
+}
+
+$order = @('preflight', 'os', 'packages', 'apps', 'engineering', 'privacy', 'omniroute', 'theme', 'configs', 'validate')
+$functions = @{
+    preflight   = 'Invoke-Preflight'
+    os          = 'Invoke-OS'
+    packages    = 'Invoke-Packages'
+    apps        = 'Invoke-Apps'
+    engineering = 'Invoke-Engineering'
+    privacy     = 'Invoke-Privacy'
+    omniroute   = 'Invoke-OmniRoute'
+    theme       = 'Invoke-Theme'
+    configs     = 'Invoke-Configs'
+    validate    = 'Invoke-Validate'
+}
+
+$selected = @()
+if ($Only.Count -eq 0 -or $Only -contains 'all') {
+    $selected = $order
+}
+else {
+    foreach ($name in $Only) {
+        if ($order -notcontains $name) {
+            throw "Unknown module '$name'. Valid values: all, $($order -join ', ')."
+        }
+        $selected += $name
+    }
+}
+
+$selected = @($selected | Select-Object -Unique)
+
+$moduleRoot = Join-Path $PSScriptRoot 'modules'
+Get-ChildItem -Path $moduleRoot -Filter '*.ps1' | Sort-Object Name | ForEach-Object {
+    . $_.FullName
+}
+
+$state = Get-StackState
+$script:StackState = $state
+$fullRun = ($selected.Count -eq $order.Count)
+$startedAt = Get-Date
+$failed = $false
+$transcript = $null
+
+if (-not $DryRun) {
+    if (-not (Test-Path $script:LogRoot)) {
+        New-Item -ItemType Directory -Path $script:LogRoot -Force | Out-Null
+    }
+    $transcript = Join-Path $script:LogRoot ("install-{0}.log" -f (Get-Timestamp))
+    try {
+        Start-Transcript -Path $transcript | Out-Null
+    }
+    catch {
+        Write-Warn "Could not start transcript: $($_.Exception.Message)"
+        $transcript = $null
+    }
+}
+
+Write-Host ''
+Write-Host 'win11-engineering-stack' -ForegroundColor White
+Write-Host "  repo:  $script:RepoRoot"
+Write-Host "  mode:  $(if ($DryRun) { 'dry run' } else { 'apply' })"
+Write-Host "  only:  $($selected -join ', ')"
+if ($transcript) { Write-Host "  log:   $transcript" }
+
+if ($state.PendingReboot -and -not $Resume -and $fullRun) {
+    Write-Warn 'A previous run is waiting for a reboot.'
+    Write-Warn 'Reboot, then run: .\scripts\Install.ps1 -Resume'
+    if ($transcript) { Stop-Transcript | Out-Null }
+    return
+}
+
+if ($Resume) {
+    $state.PendingReboot = $false
+    Save-StackState $state
+}
+
+try {
+    foreach ($name in $selected) {
+        if ($Resume -and -not $Force -and $state.Completed -contains $name -and $name -ne 'preflight') {
+            Write-Skip "module '$name' already completed."
+            continue
+        }
+
+        $functionName = $functions[$name]
+        if ($null -eq (Get-Command $functionName -ErrorAction SilentlyContinue)) {
+            throw "Module function $functionName is missing. Check scripts\modules."
+        }
+
+        & $functionName
+
+        if (-not $DryRun) {
+            if ($state.Completed -notcontains $name) {
+                $state.Completed += $name
+            }
+            Save-StackState $state
+        }
+
+        if ($state.PendingReboot -and -not $DryRun) {
+            Write-Host ''
+            Write-Warn 'A reboot is required before continuing.'
+            Write-Warn 'Reboot, then run: .\scripts\Install.ps1 -Resume'
+            break
+        }
+    }
+
+    $validation = Get-Variable -Name ValidationFailed -Scope Script -ErrorAction SilentlyContinue
+    if ($validation -and $validation.Value) {
+        $failed = $true
+    }
+}
+catch {
+    $failed = $true
+    Write-Fail $_.Exception.Message
+    if ($_.ScriptStackTrace) {
+        Write-Detail $_.ScriptStackTrace
+    }
+}
+finally {
+    $elapsed = (Get-Date) - $startedAt
+    Write-Host ''
+    Write-Host ("Finished in {0:mm\:ss}" -f $elapsed) -ForegroundColor White
+    if ($transcript) { Stop-Transcript | Out-Null }
+}
+
+if ($failed) { exit 1 }
+exit 0

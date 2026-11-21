@@ -3,6 +3,14 @@
 format follows keep a changelog. versions are git tags like `v0.1.0`.
 
 ## [Unreleased]
+### changed
+- renamed the repo to `win11-engineering-stack`. the old URL still redirects.
+- merged the modular daily installer, the daily config set and their docs into this repo. `Install.ps1` and `Validate.ps1` are the front doors for both profiles.
+- OpenCode now uses one V2 config with `providers` and `permissions`. the old root config is gone.
+- Defender calls are limited to `Add-MpPreference` for exclusions. no script disables real-time protection or replaces the preference set.
+- missing winget is a skip with manual IDs in the README, not a failed run.
+- OmniRoute logon tasks use a `.cmd` wrapper so `.cmd` CLI shims work.
+
 ### removed
 - dropped the study pack: Zotero, SumatraPDF, MiKTeX, Typst and their configs. Windows Terminal moved into the base app list.
 - dropped Komorebi and whkd, including keybinds, WM config, autostart shortcuts and smoke checks. the desktop is stock Windows now.

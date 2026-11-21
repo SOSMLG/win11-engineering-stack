@@ -1,38 +1,55 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "model": "omniroute/auto-coding",
   "share": "disabled",
-  "permission": {
-    "bash": {
-      "powershell*install-Win-Iot.ps1*-DryRun*": "allow"
-    }
+  "permissions": [
+    { "action": "read", "resource": "*Siemens/*", "effect": "deny" },
+    { "action": "read", "resource": "*MATLAB/*", "effect": "deny" },
+    { "action": "read", "resource": "*datasets/*", "effect": "deny" },
+    { "action": "read", "resource": "*.venv/*", "effect": "deny" },
+    { "action": "read", "resource": "*.ssh/*", "effect": "deny" },
+    { "action": "read", "resource": "*.kdbx", "effect": "deny" },
+    { "action": "read", "resource": "*.env", "effect": "deny" },
+    { "action": "shell", "resource": "*", "effect": "ask" },
+    { "action": "shell", "resource": "git status *", "effect": "allow" },
+    { "action": "shell", "resource": "git diff *", "effect": "allow" },
+    { "action": "shell", "resource": "git log *", "effect": "allow" }
+  ],
+  "watcher": {
+    "ignore": [
+      "**/node_modules/**",
+      "**/.git/objects/**",
+      "**/Siemens/**",
+      "**/MATLAB/**",
+      "**/datasets/**",
+      "**/.venv/**",
+      "**/__pycache__/**",
+      "**/site-packages/**"
+    ]
   },
-  "agent": {
-    "review": {
-      "description": "read-only reviewer for this repo. checks a diff against AGENTS.md rules.",
-      "mode": "subagent",
-      "prompt": "You review diffs for this repo. Read AGENTS.md first and judge the diff against its rules. Report only real problems: missing $LASTEXITCODE checks, writes without a dry-run log line, PS 5.1 incompatibilities, changes that overwrite a lived-in config, stale references to removed folders. Give file and line, one sentence each. If it looks fine, say so. Never edit files.",
-      "tools": {
-        "write": false,
-        "edit": false,
-        "bash": false
+  "providers": {
+    "omniroute": {
+      "name": "OmniRoute",
+      "env": ["OMNIROUTE_API_KEY"],
+      "package": "@opencode/ai/providers/openai-compatible",
+      "settings": {
+        "baseURL": "http://127.0.0.1:20128/v1"
+      },
+      "models": {
+        "auto": { "name": "OmniRoute Auto", "modelID": "auto" },
+        "auto-coding": { "name": "OmniRoute Auto Coding", "modelID": "auto/coding" },
+        "auto-fast": { "name": "OmniRoute Auto Fast", "modelID": "auto/fast" }
       }
     }
   },
   "command": {
-    "test": {
-      "description": "syntax check the installer and run its dry-run preflight",
-      "template": "powershell -NoProfile -Command $null=[System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path ./install-Win-Iot.ps1),[ref]$null,[ref]$null); powershell -NoProfile -ExecutionPolicy Bypass -File ./install-Win-Iot.ps1 -DryRun",
-      "agent": "build"
-    },
     "precheck": {
-      "description": "parse the installer before a real run",
-      "template": "powershell -NoProfile -Command $null=[System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path ./install-Win-Iot.ps1),[ref]$null,[ref]$null)",
-      "agent": "build"
+      "description": "parse every PowerShell file in this repo",
+      "template": "powershell -NoProfile -Command Get-ChildItem .\\scripts -Recurse -Filter *.ps1 | ForEach-Object { $t=$null; $e=$null; [void][System.Management.Automation.Language.Parser]::ParseFile($_.FullName,[ref]$t,[ref]$e); if($e.Count){$e | ForEach-Object { Write-Error $_.Message } } }"
     },
     "dryrun": {
-      "description": "log every write the installer would make, then stop",
-      "template": "powershell -NoProfile -ExecutionPolicy Bypass -File ./install-Win-Iot.ps1 -DryRun",
-      "agent": "build"
+      "description": "print planned changes without applying them",
+      "template": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\Install.ps1 -Profile iot -DryRun"
     }
   }
 }

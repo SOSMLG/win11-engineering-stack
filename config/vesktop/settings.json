@@ -1,0 +1,19 @@
+{
+  "hardwareAcceleration": true,
+  "hardwareVideoAcceleration": false,
+  "hardwareVideoEncoding": false,
+  "nativeTitleBar": false,
+  "enableMenu": false,
+  "enableShadow": false,
+  "enableRoundedCorners": true,
+  "enableSplashScreen": false,
+  "splashTheming": false,
+  "disableSmoothScroll": true,
+  "tray": true,
+  "minimizeToTray": true,
+  "enableTaskbarFlashing": false,
+  "arRPC": false,
+  "autoStartMinimized": false,
+  "appBadge": false,
+  "transparencyOption": "none"
+}

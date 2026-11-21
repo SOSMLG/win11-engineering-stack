@@ -1,7 +1,7 @@
 # what the tweaks do
 
 titus-style, native registry. `-NoTweaks` skips them. `-TweaksOnly` runs just these (plus O&O) on a live machine.
-run `-DryRun` first, then `-Verify` after. test in a VM before a real box.
+run `-DryRun` first, then `-Verify` after. try it in a VM before a real box.
 
 ## order
 1. restore point

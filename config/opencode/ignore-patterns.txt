@@ -1,0 +1,19 @@
+# Scan exclusions used by this setup.
+#
+# OpenCode has no .opencodeignore file. This list is documentation; the
+# installer applies the same patterns in three places:
+#
+#   1. watcher.ignore in ~/.config/opencode/opencode.json
+#   2. permissions deny rules in the same file
+#   3. .gitignore in repositories that hold engineering data
+#
+# Keep this list in sync with configs/opencode/opencode.json.
+
+**/node_modules/**
+**/.git/objects/**
+**/Siemens/**
+**/MATLAB/**
+**/datasets/**
+**/.venv/**
+**/__pycache__/**
+**/site-packages/**

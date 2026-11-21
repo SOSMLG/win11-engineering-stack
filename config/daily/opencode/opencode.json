@@ -1,0 +1,43 @@
+{
+  "model": "omniroute/auto-coding",
+  "permissions": [
+    { "action": "read", "resource": "*Siemens/*", "effect": "deny" },
+    { "action": "read", "resource": "*MATLAB/*", "effect": "deny" },
+    { "action": "read", "resource": "*datasets/*", "effect": "deny" },
+    { "action": "read", "resource": "*.venv/*", "effect": "deny" },
+    { "action": "read", "resource": "*.ssh/*", "effect": "deny" },
+    { "action": "read", "resource": "*.kdbx", "effect": "deny" },
+    { "action": "read", "resource": "*.env", "effect": "deny" },
+    { "action": "shell", "resource": "*", "effect": "ask" },
+    { "action": "shell", "resource": "git status *", "effect": "allow" },
+    { "action": "shell", "resource": "git diff *", "effect": "allow" },
+    { "action": "shell", "resource": "git log *", "effect": "allow" },
+    { "action": "shell", "resource": "git show *", "effect": "allow" }
+  ],
+  "watcher": {
+    "ignore": [
+      "**/node_modules/**",
+      "**/.git/objects/**",
+      "**/Siemens/**",
+      "**/MATLAB/**",
+      "**/datasets/**",
+      "**/.venv/**",
+      "**/__pycache__/**",
+      "**/site-packages/**"
+    ]
+  },
+  "providers": {
+    "omniroute": {
+      "env": ["OMNIROUTE_API_KEY"],
+      "models": {
+        "auto-coding": { "name": "OmniRoute Auto Coding", "modelID": "auto/coding" },
+        "auto-fast": { "name": "OmniRoute Auto Fast", "modelID": "auto/fast" },
+        "auto": { "name": "OmniRoute Auto", "modelID": "auto" }
+      },
+      "package": "@opencode/ai/providers/openai-compatible",
+      "settings": { "baseURL": "http://127.0.0.1:20128/v1" },
+      "name": "OmniRoute"
+    }
+  },
+  "$schema": "https://opencode.ai/config.json"
+}

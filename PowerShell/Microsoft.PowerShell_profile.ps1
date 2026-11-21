@@ -32,5 +32,5 @@ try {
 } catch {}
 
 Clear-Host
-# fastfetch on a fresh interactive shell, not in scripted runs (installs, tests).
+# fastfetch on a fresh interactive shell, not in scripted runs.
 if ((Get-Command fastfetch -EA SilentlyContinue) -and $Host.Name -eq 'ConsoleHost' -and -not [Console]::IsOutputRedirected) { fastfetch }

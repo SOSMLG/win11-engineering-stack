@@ -1,0 +1,25 @@
+# local state and logs
+*.log
+state/
+reports/
+
+# build and image junk
+*.iso
+ISO/build/
+ISO/Offline/
+*.msixbundle
+*.exe
+*.zip
+*.7z
+
+# python and editor noise
+__pycache__/
+*.py[cod]
+.venv/
+.vscode/
+.idea/
+
+# os noise
+Thumbs.db
+Desktop.ini
+.DS_Store

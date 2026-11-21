@@ -857,11 +857,14 @@ if ((-not $NoTweaks) -and (Should-Run 'tweaks')) {
       else { Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled True -EA Stop; Log '  firewall on (all profiles).' }
     }
     catch { Log "  WARN firewall: $_" }
-    # defender realtime on if the trim kept it. enabling only, never disabling.
+    # defender stays as shipped. never disable it, never replace its preference set.
     try {
-      if ($DryRun) { Log '  [dry-run] would make sure defender realtime is on.' }
+      if ($DryRun) { Log '  [dry-run] would read defender realtime status.' }
       elseif (Get-Command Get-MpComputerStatus -EA SilentlyContinue) {
-        Set-MpPreference -DisableRealtimeMonitoring $false -EA Stop; Log '  defender realtime on.'
+        $status = Get-MpComputerStatus -EA SilentlyContinue
+        if ($status -and -not $status.RealTimeProtectionEnabled) {
+          Log '  WARN defender realtime is off. turn it on in Windows Security; this script never disables it.'
+        } else { Log '  defender realtime already on.' }
       } else { Log '  defender absent on this trim. skipped.' }
     } catch { Log "  WARN defender: $_" }
     # defender skips the lab folders that exist. less rescanning big toolchains.
@@ -1714,7 +1717,7 @@ $qcur = $null
 if (Test-Path $qcss) { $qcur = Get-Content $qcss -Raw -EA SilentlyContinue }
 if ((Test-QuickcssStale $qcur) -or $ConfigsOnly -or $Force) { Copy-Config $qsrc $qcss } else { Log "  keep existing: $qcss" }
 # opencode global config: curated MCP servers (context7, playwright). fresh-only.
-Copy-Fresh (Join-Path $Repo 'config\opencode.json') (Join-Path $env:USERPROFILE '.config\opencode\opencode.json')
+Copy-Fresh (Join-Path $Repo 'config\opencode\opencode.json') (Join-Path $env:USERPROFILE '.config\opencode\opencode.json')
 # opencode global rules and on-demand skills. fresh-only per file, so your own edits survive a re-run.
 Copy-Fresh (Join-Path $Repo 'config\AGENTS.global.md') (Join-Path $env:USERPROFILE '.config\opencode\AGENTS.md')
 $ocSkillSrc = Join-Path $Repo 'config\opencode-skills'
@@ -1864,9 +1867,9 @@ Complete-Phase 'autostart'
 } elseif ($ConfigsOnly) { Log 'Autostart/browser/finish skipped (configs-only).' } else { Log 'Autostart/browser/finish skipped (tweaks-only).' }
 
 if ((-not $TweaksOnly) -and (-not $ConfigsOnly)) {
-  if ($DryRun) { Log 'Smoke test skipped (dry-run).' }
+  if ($DryRun) { Log 'Self-check skipped (dry-run).' }
   else {
-  Log 'Smoke test...'
+  Log 'Self-check...'
   foreach ($s in @(
     @{ n='git'; cmd={ git --version } },
     @{ n='python'; cmd={ python --version } },

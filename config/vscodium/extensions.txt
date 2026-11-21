@@ -1,0 +1,12 @@
+# VSCodium uses Open VSX. Install with:
+#   codium --install-extension <id>
+# Pylance is Microsoft-proprietary and not available here; BasedPyright replaces it.
+
+ms-python.python
+ms-python.debugpy
+ms-toolsai.jupyter
+charliermarsh.ruff
+detachhead.basedpyright
+njpwerner.autodocstring
+Catppuccin.catppuccin-vsc
+Catppuccin.catppuccin-vsc-icons
