@@ -154,3 +154,7 @@ MIT. see [LICENSE](LICENSE).
 - [profile and all repos](https://github.com/SOSMLG) - notes, configs, and the rest of the setups
 
 bugs and ideas go in [issues](https://github.com/SOSMLG/win11-engineering-stack/issues).
+
+## Repository standard
+
+This repo follows the SOSMLG standard: [contributing](CONTRIBUTING.md), [security](SECURITY.md), [changelog](CHANGELOG.md). Local workflow: [English guide](https://github.com/SOSMLG/.github/blob/main/docs/GIT_GUIDE.md) / [Arabic guide](https://github.com/SOSMLG/.github/blob/main/docs/GIT_GUIDE.ar.md).

@@ -3,6 +3,9 @@
 format follows keep a changelog. versions are git tags like `v0.1.0`.
 
 ## [Unreleased]
+### added
+- repository health files and read-only CI validation.
+
 ### changed
 - renamed the repo to `win11-engineering-stack`. the old URL still redirects.
 - merged the modular daily installer, the daily config set and their docs into this repo. `Install.ps1` and `Validate.ps1` are the front doors for both profiles.
