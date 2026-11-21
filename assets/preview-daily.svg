@@ -1,36 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450" role="img" aria-labelledby="title desc">
-  <title id="title">Daily profile preview</title>
-  <desc id="desc">Modular PowerShell installer for an engineering workstation, with dry-run and read-only validation.</desc>
-  <defs>
-    <linearGradient id="daily-bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#16181D"/>
-      <stop offset="100%" stop-color="#202329"/>
-    </linearGradient>
-  </defs>
-  <rect width="800" height="450" rx="16" fill="url(#daily-bg)"/>
-  <rect x="1" y="1" width="798" height="448" rx="15" fill="none" stroke="#30343B" stroke-width="2"/>
-  <g stroke="#30343B" stroke-width="1" opacity="0.35">
-    <path d="M0 75 H800 M0 150 H800 M0 225 H800 M0 300 H800 M0 375 H800"/>
-    <path d="M80 0 V450 M160 0 V450 M240 0 V450 M320 0 V450 M400 0 V450 M480 0 V450 M560 0 V450 M640 0 V450 M720 0 V450"/>
-  </g>
-  <rect x="40" y="42" width="5" height="54" rx="2.5" fill="#E8A33D"/>
-  <text x="62" y="70" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="26" font-weight="700" fill="#E8A33D">DAILY</text>
-  <text x="62" y="94" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14" fill="#9A9AA2">engineering workstation profile</text>
-
-  <g transform="translate(40,130)">
-    <rect width="720" height="250" rx="12" fill="#202329" stroke="#30343B" stroke-width="2"/>
-    <path d="M0 12 A12 12 0 0 1 12 0 H708 A12 12 0 0 1 720 12 V36 H0 Z" fill="#26292F"/>
-    <circle cx="22" cy="18" r="5" fill="#8FB57A"/>
-    <circle cx="40" cy="18" r="5" fill="#D2992F"/>
-    <circle cx="58" cy="18" r="5" fill="#9A9AA2"/>
-    <text x="360" y="23" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" fill="#9A9AA2">Install.ps1 -Profile daily</text>
-    <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14">
-      <text x="24" y="72" fill="#E8A33D">$</text><text x="44" y="72" fill="#D8D3C8">Install.ps1 -DryRun</text>
-      <text x="24" y="102" fill="#E8A33D">$</text><text x="44" y="102" fill="#D8D3C8">Install.ps1 -Only os,apps</text>
-      <text x="24" y="132" fill="#E8A33D">$</text><text x="44" y="132" fill="#D8D3C8">Install.ps1 -Resume</text>
-      <text x="24" y="170" fill="#8FB57A">OK</text><text x="58" y="170" fill="#9A9AA2">no writes in dry-run</text>
-      <text x="24" y="196" fill="#8FB57A">OK</text><text x="58" y="196" fill="#9A9AA2">state under %LOCALAPPDATA%</text>
-      <text x="24" y="222" fill="#8FB57A">OK</text><text x="58" y="222" fill="#9A9AA2">Defender untouched</text>
-    </g>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="420" viewBox="0 0 800 420" role="img" aria-labelledby="title desc">
+  <title id="title">Daily profile</title>
+  <desc id="desc">PowerShell modules for an engineering workstation, with dry run and read-only validation.</desc>
+  <rect width="800" height="420" rx="14" fill="#202329"/>
+  <rect x="1" y="1" width="798" height="418" rx="13" fill="none" stroke="#30343B" stroke-width="2"/>
+  <text x="36" y="52" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="22" font-weight="700" fill="#D8D3C8">Daily</text>
+  <text x="36" y="80" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14" fill="#9A9AA2">Engineering workstation</text>
+  <rect x="36" y="108" width="728" height="270" rx="10" fill="#16181D" stroke="#30343B" stroke-width="2"/>
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14">
+    <text x="60" y="148" fill="#E8A33D">$</text><text x="80" y="148" fill="#D8D3C8">Install.ps1 -Profile daily -DryRun</text>
+    <text x="60" y="182" fill="#E8A33D">$</text><text x="80" y="182" fill="#D8D3C8">Install.ps1 -Profile daily</text>
+    <text x="60" y="216" fill="#E8A33D">$</text><text x="80" y="216" fill="#D8D3C8">Validate.ps1 -Profile daily</text>
+    <text x="60" y="264" fill="#9A9AA2">modules</text><text x="140" y="264" fill="#D8D3C8">os, packages, apps, engineering</text>
+    <text x="60" y="296" fill="#9A9AA2">state</text><text x="140" y="296" fill="#D8D3C8">%LOCALAPPDATA%\win11-stack</text>
+    <text x="60" y="328" fill="#9A9AA2">guardrail</text><text x="140" y="328" fill="#D8D3C8">Defender preferences are not written</text>
   </g>
 </svg>
