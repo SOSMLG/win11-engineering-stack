@@ -70,6 +70,7 @@ function Set-OmniRouteNetwork {
     }
     $env:OMNIROUTE_SERVER_HOST = '127.0.0.1'
 
+    # Key is read from the environment only. Never write it to a file.
     if ($env:OMNIROUTE_API_KEY) {
         $requireKey = [Environment]::GetEnvironmentVariable('REQUIRE_API_KEY', 'User')
         if ($requireKey -ne 'true') {

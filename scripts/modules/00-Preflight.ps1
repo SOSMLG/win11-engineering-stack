@@ -100,7 +100,6 @@ function Invoke-Preflight {
         Write-Detail "[dry-run] state and logs would live in $script:StateRoot"
     }
     else {
-        New-Item -ItemType Directory -Path $script:LogRoot -Force | Out-Null
         Write-Ok "state: $script:StateRoot"
     }
 }

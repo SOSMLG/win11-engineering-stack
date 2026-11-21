@@ -127,7 +127,7 @@ else {
 $selected = @($selected | Select-Object -Unique)
 
 $moduleRoot = Join-Path $PSScriptRoot 'modules'
-Get-ChildItem -Path $moduleRoot -Filter '*.ps1' | Sort-Object Name | ForEach-Object {
+Get-ChildItem -Path $moduleRoot -Filter '*.ps1' -File | Sort-Object Name | ForEach-Object {
     . $_.FullName
 }
 

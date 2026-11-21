@@ -20,7 +20,8 @@ function Set-VSCodiumConfig {
 
     $target = Join-Path $env:APPDATA 'VSCodium\User\settings.json'
     Write-JsonFile -Path $target -Value $settings
-    Write-Ok "VSCodium settings merged: $target"
+    if ($script:DryRun) { Write-Detail "[dry-run] VSCodium settings would be merged: $target" }
+    else { Write-Ok "VSCodium settings merged: $target" }
 }
 
 function Set-OpenCodeConfig {
@@ -49,11 +50,13 @@ function Set-OpenCodeConfig {
 
     if ($existingV2 -and -not $script:Force) {
         Write-JsonFile -Path $target -Value $config
-        Write-Ok "OpenCode config merged (V2 provider shape): $target"
+        if ($script:DryRun) { Write-Detail "[dry-run] OpenCode config would be merged (V2 provider shape): $target" }
+        else { Write-Ok "OpenCode config merged (V2 provider shape): $target" }
     }
     else {
         Write-JsonFile -Path $target -Value $config -NoMerge
-        Write-Ok "OpenCode config replaced with the V2 provider shape: $target"
+        if ($script:DryRun) { Write-Detail "[dry-run] OpenCode config would be replaced with the V2 provider shape: $target" }
+        else { Write-Ok "OpenCode config replaced with the V2 provider shape: $target" }
     }
 
     $agentsSource = Join-Path $script:ConfigRoot 'opencode\AGENTS.md'
@@ -75,7 +78,8 @@ function Set-VesktopConfig {
         $vesktopTarget = Join-Path $env:APPDATA 'vesktop\settings.json'
         $vesktop = ConvertTo-DeepHashtable (Get-Content $vesktopSource -Raw | ConvertFrom-Json)
         Write-JsonFile -Path $vesktopTarget -Value $vesktop
-        Write-Ok "Vesktop settings merged: $vesktopTarget"
+        if ($script:DryRun) { Write-Detail "[dry-run] Vesktop settings would be merged: $vesktopTarget" }
+        else { Write-Ok "Vesktop settings merged: $vesktopTarget" }
     }
 
     $vencordSource = Join-Path $script:ConfigRoot 'vencord\settings.json'
@@ -83,7 +87,8 @@ function Set-VesktopConfig {
         $vencordTarget = Join-Path $env:APPDATA 'vesktop\settings\settings.json'
         $vencord = ConvertTo-DeepHashtable (Get-Content $vencordSource -Raw | ConvertFrom-Json)
         Write-JsonFile -Path $vencordTarget -Value $vencord
-        Write-Ok "Vencord settings merged: $vencordTarget"
+        if ($script:DryRun) { Write-Detail "[dry-run] Vencord settings would be merged: $vencordTarget" }
+        else { Write-Ok "Vencord settings merged: $vencordTarget" }
     }
 
     Write-Detail 'Close Vesktop before changing these files; it rewrites them on exit.'

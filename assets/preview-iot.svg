@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="420" viewBox="0 0 800 420" role="img" aria-labelledby="title desc">
+  <title id="title">IoT LTSC profile</title>
+  <desc id="desc">Slim Windows IoT LTSC installer with staged sources, winget fallback and read-only verification.</desc>
+  <rect width="800" height="420" rx="14" fill="#202329"/>
+  <rect x="1" y="1" width="798" height="418" rx="13" fill="none" stroke="#30343B" stroke-width="2"/>
+  <text x="36" y="52" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="22" font-weight="700" fill="#D8D3C8">IoT LTSC</text>
+  <text x="36" y="80" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14" fill="#9A9AA2">Slim offline-first build</text>
+  <rect x="36" y="108" width="728" height="270" rx="10" fill="#16181D" stroke="#30343B" stroke-width="2"/>
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14">
+    <text x="60" y="148" fill="#E8A33D">$</text><text x="80" y="148" fill="#D8D3C8">Install.ps1 -Profile iot -DryRun</text>
+    <text x="60" y="182" fill="#E8A33D">$</text><text x="80" y="182" fill="#D8D3C8">Install.ps1 -Profile iot -OfflineDir D:\stage</text>
+    <text x="60" y="216" fill="#E8A33D">$</text><text x="80" y="216" fill="#D8D3C8">Validate.ps1 -Profile iot</text>
+    <text x="60" y="264" fill="#9A9AA2">sources</text><text x="140" y="264" fill="#D8D3C8">staged files, winget, vendor URLs</text>
+    <text x="60" y="296" fill="#9A9AA2">desktop</text><text x="140" y="296" fill="#D8D3C8">stock Windows, no tweaks or debloat</text>
+    <text x="60" y="328" fill="#9A9AA2">verify</text><text x="140" y="328" fill="#D8D3C8">checks configs and installed state</text>
+  </g>
+</svg>

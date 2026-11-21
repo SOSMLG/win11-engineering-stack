@@ -19,7 +19,7 @@ $ErrorActionPreference = 'Stop'
 $script:DryRun = $false
 $script:Force = $false
 
-Get-ChildItem -Path (Join-Path $PSScriptRoot 'modules') -Filter '*.ps1' |
+Get-ChildItem -Path (Join-Path $PSScriptRoot 'modules') -Filter '*.ps1' -File |
     Sort-Object Name |
     ForEach-Object { . $_.FullName }
 

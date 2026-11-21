@@ -26,7 +26,7 @@ no MCP server is enabled by default. that keeps each message small and avoids se
 
 ## upgrading an existing machine
 
-the installer is fresh-only, so a machine that already has `~\.config\opencode\opencode.json` keeps its old config. to switch: back it up, then run `install-Win-Iot.ps1 -ConfigsOnly`, or copy `config/opencode/opencode.json` over by hand.
+the IoT profile is fresh-only, but the daily profile merges JSON by default. a machine that already has `~\.config\opencode\opencode.json` may keep its old V2 config. to switch: back it up, then run `install-Win-Iot.ps1 -ConfigsOnly`, or copy `config/opencode/opencode.json` over by hand.
 
 ## measure your own setup
 

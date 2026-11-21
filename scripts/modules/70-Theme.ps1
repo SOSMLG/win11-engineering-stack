@@ -71,7 +71,8 @@ function Set-TerminalTheme {
     $settings['theme'] = 'dark'
 
     Write-JsonFile -Path $path -Value $settings -NoMerge
-    Write-Ok "terminal theme applied: $path"
+    if ($script:DryRun) { Write-Detail "[dry-run] terminal theme would be written: $path" }
+    else { Write-Ok "terminal theme applied: $path" }
 }
 
 function Set-WindowsTheme {

@@ -168,11 +168,11 @@ function Invoke-Validate {
 
     $listeners = @(Get-NetTCPConnection -LocalPort 20128 -State Listen -ErrorAction SilentlyContinue)
     if ($listeners.Count -gt 0) {
-        $public = @($listeners | Where-Object { $_.LocalAddress -notin @('127.0.0.1', '::1') })
-        if ($public.Count -eq 0) {
+        if (Test-OmniRouteLoopback) {
             Add-ValidationResult -Status PASS -Check 'OmniRoute binding' -Detail 'loopback only'
         }
         else {
+            $public = @($listeners | Where-Object { $_.LocalAddress -notin @('127.0.0.1', '::1') })
             Add-ValidationResult -Status FAIL -Check 'OmniRoute binding' -Detail ("listening on " + (($public.LocalAddress | Select-Object -Unique) -join ', '))
         }
     }

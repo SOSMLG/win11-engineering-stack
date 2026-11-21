@@ -40,7 +40,7 @@ Parse every PowerShell file, parse every JSON file, then run the read-only
 paths:
 
 ```powershell
-Get-ChildItem .\scripts -Recurse -Filter *.ps1 | ForEach-Object {
+Get-ChildItem . -Recurse -Filter *.ps1 | ForEach-Object {
   $t = $null; $e = $null
   [void][System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$t, [ref]$e)
   if ($e.Count) { $e | ForEach-Object { Write-Error $_.Message } }
