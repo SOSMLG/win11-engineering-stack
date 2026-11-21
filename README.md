@@ -1,12 +1,51 @@
+<div align="center">
+  <img src="assets/banner.svg" alt="Win IoT LTSC slim setup" width="100%" />
+</div>
+
+<div align="center">
+
 # Win10/Win11 IoT (Enterprise) LTSC setup (slim)
 
 an unattended, rerunnable setup for Windows 10/11 IoT Enterprise LTSC: a quiet system, a tiling
 window manager, a small app set and your configs. native PowerShell 5.1, no extra frameworks.
 built for a tiny10-style box with no store and often no network on first boot.
 
+![powershell](https://img.shields.io/badge/PowerShell-5.1-5391FE?style=for-the-badge)
+![windows](https://img.shields.io/badge/Windows-10%2F11%20IoT%20LTSC-0078D6?style=for-the-badge)
+![wm](https://img.shields.io/badge/WM-Komorebi%20%2B%20whkd-7B68EE?style=for-the-badge)
+![engines](https://img.shields.io/badge/engines-winget%20%2F%20choco%20%2F%20gh-2f81f7?style=for-the-badge)
+![license](https://img.shields.io/badge/license-not%20chosen-6e7681?style=for-the-badge)
+
+<table>
+  <tr>
+    <td align="center"><b>🧊 unattended</b><br/>no prompts, rerunnable</td>
+    <td align="center"><b>📦 offline first</b><br/>staged files, winget, choco, gh</td>
+    <td align="center"><b>🪟 tiled desktop</b><br/>komorebi and whkd, sway-style keys</td>
+    <td align="center"><b>🛠️ native ps 5.1</b><br/>no extra frameworks</td>
+  </tr>
+</table>
+
+</div>
+
 > this changes system settings and removes some built-in components. test in a VM first and run
 > `-DryRun` before a real run. everything it touches is listed in [docs/TWEAKS.md](docs/TWEAKS.md).
 > read [SECURITY.md](SECURITY.md) once: the ISO creates an admin account with a blank password.
+
+## contents
+
+- [quick start](#quick-start)
+- [what you get](#what-you-get)
+- [options](#options)
+- [how it behaves](#how-it-behaves)
+- [configs](#configs)
+- [O&O ShutUp10++](#oo-shutup10)
+- [offline and ISO](#offline-and-iso)
+- [after the install](#after-the-install)
+- [keybinds (sway port, WIN = sway Mod4)](#keybinds-sway-port-win--sway-mod4)
+- [repo layout](#repo-layout)
+- [testing and contributing](#testing-and-contributing)
+- [license](#license)
+- [more from sosmlg](#more-from-sosmlg)
 
 ## quick start
 
@@ -25,7 +64,7 @@ powershell -ExecutionPolicy Bypass -File install-Win-Iot.ps1 -Verify   # read ba
 ## what you get
 
 | area | choice |
-|---|---|
+| --- | --- |
 | shell | stock PowerShell 5.1 plus a shell pack in the profile: starship, zoxide, fzf, bat, eza, fastfetch. native binaries, every hook guarded |
 | window manager | Komorebi + whkd |
 | browser | Helium (`ImputNet.Helium`) instead of Edge |
@@ -49,7 +88,7 @@ why the other engines exist.
 ## options
 
 | flag | what it does |
-|---|---|
+| --- | --- |
 | `-DryRun` | walk the whole install and log `[dry-run] would ...` for every write, download and cleanup, then stop. log and report json are still written |
 | `-Verify` | read back key tweaks and print ok/MISS per item. exit code 1 if anything is missing. read-only |
 | `-Unattended` | no prompts |
@@ -85,7 +124,7 @@ why the other engines exist.
 what the installer copies, and what happens on a re-run.
 
 | file | on re-run | notes |
-|---|---|---|
+| --- | --- | --- |
 | `PowerShell/Microsoft.PowerShell_profile.ps1` | overwritten | UTF-8 and history-search arrows, eza aliases, starship and zoxide init, fastfetch on interactive shells, ctrl+r/t fzf chords once PSFzf is present. guarded, PS 5.1 safe |
 | `Komorebi/komorebi.json`, `Komorebi/whkdrc` | overwritten | `border_style` fixed, 10 workspaces, stock borders |
 | `VSCodium/settings.json`, `keybindings.json` | overwritten | ctrl+alt+t terminal, ctrl+alt+b sidebar. edit `extensions.txt` to change extensions |
@@ -122,7 +161,7 @@ the answer files create an admin account named `My Pc` with a blank password and
 ## keybinds (sway port, WIN = sway Mod4)
 
 | keys | action |
-|---|---|
+| --- | --- |
 | `Win+Return` | PowerShell |
 | `Win+T` | files |
 | `Win+Z` | Helium |
@@ -148,7 +187,7 @@ the old `app_specific_configuration_path` key hard-crashed Komorebi when the fil
 ## repo layout
 
 | path | what |
-|---|---|
+| --- | --- |
 | `Setup.cmd`, `install-Win-Iot.ps1` | entry points |
 | `lib/` | installer modules |
 | `config/` | defaults, tweak matrix, sha256 pins, deployed opencode config |
@@ -166,3 +205,12 @@ third-party software: [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md). history:
 
 ## license
 not chosen yet. until there is a LICENSE file, others have no permission to reuse this.
+
+## more from sosmlg
+
+- [DebianSway](https://github.com/SOSMLG/DebianSway) - sway/wayland desktop for debian and devuan
+- [DevuanDwm](https://github.com/SOSMLG/DevuanDwm) - dwm-based minimal desktop for devuan
+- [XfceMlg](https://github.com/SOSMLG/XfceMlg) - xfce rice for debian and devuan
+- [profile and all repos](https://github.com/SOSMLG) - notes, configs and the rest of the setups
+
+bugs and ideas go in [issues](https://github.com/SOSMLG/SetupForWinIotEnterprise/issues).
