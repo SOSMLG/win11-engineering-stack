@@ -8,5 +8,3 @@ ms-toolsai.jupyter
 charliermarsh.ruff
 detachhead.basedpyright
 njpwerner.autodocstring
-Catppuccin.catppuccin-vsc
-Catppuccin.catppuccin-vsc-icons

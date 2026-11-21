@@ -6,11 +6,14 @@
   "profiles": {
     "defaults": {
       "font": {
-        "face": "JetBrainsMono Nerd Font",
-        "size": 10
+        "face": "JetBrainsMono Nerd Font Mono",
+        "size": 11
       },
       "historySize": 10000,
-      "padding": "8"
+      "padding": "8",
+      "colorScheme": "Graphite Amber",
+      "useAcrylic": false,
+      "opacity": 100
     },
     "list": [
       {
@@ -33,6 +36,30 @@
       }
     ]
   },
-  "schemes": [],
+  "schemes": [
+    {
+      "name": "Graphite Amber",
+      "background": "#16181D",
+      "foreground": "#D8D3C8",
+      "cursorColor": "#E8A33D",
+      "selectionBackground": "#3A352C",
+      "black": "#25272C",
+      "red": "#C97064",
+      "green": "#8FB57A",
+      "yellow": "#E8A33D",
+      "blue": "#7E9DB5",
+      "purple": "#A78BB5",
+      "cyan": "#79A9A6",
+      "white": "#D8D3C8",
+      "brightBlack": "#454A52",
+      "brightRed": "#DF9588",
+      "brightGreen": "#A7C99A",
+      "brightYellow": "#F0BC6D",
+      "brightBlue": "#98B4C8",
+      "brightPurple": "#C0A8CB",
+      "brightCyan": "#9CC4C1",
+      "brightWhite": "#F0ECE2"
+    }
+  ],
   "actions": []
 }

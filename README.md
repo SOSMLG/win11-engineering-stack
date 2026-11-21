@@ -10,10 +10,11 @@ one Windows setup repo, two profiles: `daily` for engineering work and `iot` for
 slim Win10/Win11 IoT Enterprise LTSC boxes. native PowerShell 5.1, one config
 tree, dry-run before every write.
 
-![powershell](https://img.shields.io/badge/PowerShell-5.1-5391FE?style=for-the-badge)
-![windows](https://img.shields.io/badge/Windows-10%2F11-0078D6?style=for-the-badge)
-![profile](https://img.shields.io/badge/profiles-daily%20%2F%20iot-2f81f7?style=for-the-badge)
-![license](https://img.shields.io/badge/license-MIT-3fb950?style=for-the-badge)
+![powershell](https://img.shields.io/badge/PowerShell-5.1-30343B?style=for-the-badge&logoColor=E8A33D)
+![windows](https://img.shields.io/badge/Windows-10%2F11-202329?style=for-the-badge&logoColor=E8A33D)
+![profile](https://img.shields.io/badge/profiles-daily%20%2F%20iot-E8A33D?style=for-the-badge&logoColor=16181D)
+![theme](https://img.shields.io/badge/theme-graphite%20%2B%20amber-D2992F?style=for-the-badge)
+![license](https://img.shields.io/badge/license-MIT-8FB57A?style=for-the-badge)
 
 </div>
 
@@ -112,6 +113,14 @@ the full list is in `install-Win-Iot.ps1 -?`. the ones used most:
   direct vendor URLs. no third-party package manager is bootstrapped.
 - **Defender.** stays as shipped. no script writes its preferences or disables
   real-time protection.
+
+## theme
+
+the repo uses one graphite + amber visual standard: graphite backgrounds, warm
+gray text, and one amber highlight per view. VSCodium and Windows Terminal use
+`Graphite Amber`; engineering apps stay on their native light theme. see the
+[visual standard](https://github.com/SOSMLG/.github/blob/main/docs/THEME.md) and
+[الطابع البصري](https://github.com/SOSMLG/.github/blob/main/docs/THEME.ar.md).
 
 ## OmniRoute and OpenCode
 

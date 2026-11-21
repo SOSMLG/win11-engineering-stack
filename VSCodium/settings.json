@@ -1,5 +1,5 @@
 {
-    "workbench.colorTheme": "Darkmatter",
+    "workbench.colorTheme": "Graphite Amber",
     "editor.cursorBlinking": "phase",
     "editor.cursorSmoothCaretAnimation": "on",
     "animations.Install-Method": "Custom UI Style",
@@ -33,7 +33,7 @@
     "terminal.integrated.fontFamily": "JetBrainsMono Nerd Font",
     "terminal.integrated.fontSize": 12,
     "emmet.includeLanguages": {
-        "javascript": "javascriptreact"       
+        "javascript": "javascriptreact"
     },
     "emmet.triggerExpansionOnTab": true,
     "github.copilot.enable": {

@@ -1,6 +1,6 @@
 /**
- * @name system24-darkmatter
- * @description a tui-style discord theme recolored to the Darkmatter rice (near-black #121113, coral accent #e75353).
+ * @name system24-graphite-amber
+ * @description a tui-style discord theme recolored to graphite amber (graphite #16181D, amber accent #E8A33D).
  * @author refact0r
  * @version 2.1.0
  * @invite nz87hXyvcy
@@ -86,79 +86,81 @@ body {
 /* color options */
 :root {
     color-scheme: dark;
-    --colors: on; /* off: discord default colors, on: darkmatter custom colors */
+    --colors: on; /* off: discord default colors, on: graphite amber custom colors */
 
-    /* text colors (grays follow terminal fg #ffffff / #c1c1c1 / #999999) */
+    /* text colors */
     --text-0: var(--bg-4); /* text on colored elements */
-    --text-1: oklch(97% 0 24); /* other normally white text */
-    --text-2: oklch(88% 0 24); /* headings and important text */
-    --text-3: oklch(80% 0 24); /* normal text */
-    --text-4: oklch(66% 0 24); /* icon buttons and channels */
-    --text-5: oklch(48% 0 24); /* muted channels/chats and timestamps */
+    --text-1: #F5F1E7; /* other normally white text */
+    --text-2: #D8D3C8; /* headings and important text */
+    --text-3: #D8D3C8; /* normal text */
+    --text-4: #9A9AA2; /* icon buttons and channels */
+    --text-5: #6F7078; /* muted channels/chats and timestamps */
 
     /* background and dark colors */
-    --bg-1: oklch(31% 0.005 24); /* dark buttons when clicked */
-    --bg-2: oklch(27% 0.005 24); /* dark buttons */
-    --bg-3: oklch(22% 0.005 24); /* spacing, secondary elements (#1c1b1d) */
-    --bg-4: oklch(18% 0.005 24); /* main background color (#121113) */
-    --hover: oklch(98% 0 24 / 0.06); /* channels and buttons when hovered */
-    --active: oklch(98% 0 24 / 0.12); /* channels and buttons when clicked or selected */
-    --active-2: oklch(98% 0 24 / 0.18); /* extra state for transparent buttons */
+    --bg-1: #2A2D33; /* dark buttons when clicked */
+    --bg-2: #25272C; /* dark buttons */
+    --bg-3: #202329; /* spacing, secondary elements */
+    --bg-4: #16181D; /* main background color */
+    --hover: rgba(216, 211, 200, 0.06); /* channels and buttons when hovered */
+    --active: rgba(216, 211, 200, 0.12); /* channels and buttons when clicked */
+    --active-2: rgba(216, 211, 200, 0.18); /* extra state for transparent buttons */
     --message-hover: var(--hover); /* messages when hovered */
 
-    /* accent colors (coral scale, #e75353 at --accent-3) */
-    --accent-1: var(--red-1); /* links and other accent text */
-    --accent-2: var(--red-2); /* small accent elements */
-    --accent-3: var(--red-3); /* accent buttons */
+    /* accent colors (amber scale; system24 red slots carry the amber values) */
+    --accent-1: var(--red-2); /* links and other accent text */
+    --accent-2: var(--red-3); /* small accent elements */
+    --accent-3: var(--red-1); /* accent buttons */
     --accent-4: var(--red-4); /* accent buttons when hovered */
     --accent-5: var(--red-5); /* accent buttons when clicked */
-    --accent-new: var(--red-2); /* stuff that's normally red like mute/deafen buttons */
+    --accent-new: var(--red-2); /* muted/deafened controls use the accent */
     --mention: linear-gradient(to right, color-mix(in hsl, var(--accent-2), transparent 88%) 40%, transparent); /* background of messages that mention you */
     --mention-hover: linear-gradient(to right, color-mix(in hsl, var(--accent-2), transparent 93%) 40%, transparent); /* background of messages that mention you when hovered */
     --reply: linear-gradient(to right, color-mix(in hsl, var(--text-3), transparent 90%) 40%, transparent); /* background of messages that reply to you */
     --reply-hover: linear-gradient(to right, color-mix(in hsl, var(--text-3), transparent 95%) 40%, transparent); /* background of messages that reply to you when hovered */
 
     /* status indicator colors */
-    --online: var(--green-2); /* change to #40a258 for default */
-    --dnd: var(--red-2); /* change to #d83a41 for default */
-    --idle: var(--yellow-2); /* change to #cc954c for default */
-    --streaming: var(--purple-2); /* change to ##9147ff for default */
-    --offline: var(--text-4); /* change to #82838b for default offline color */
+    --online: #8FB57A;
+    --dnd: var(--status-danger);
+    --idle: #D2992F;
+    --streaming: #A78BB5;
+    --offline: var(--text-4);
 
     /* border colors */
     --border-light: var(--hover); /* general light border color */
     --border: var(--active); /* general normal border color */
     --border-hover: var(--accent-2); /* border color of panels when hovered */
-    --button-border: oklch(100% 0 24 / 0.1); /* neutral border color of buttons */
+    --button-border: rgba(245, 241, 231, 0.1); /* neutral border color of buttons */
 
     /* base colors */
-    --red-1: oklch(74% 0.17 24);
-    --red-2: oklch(69% 0.17 24);
-    --red-3: oklch(64% 0.17 24);
-    --red-4: oklch(59% 0.17 24);
-    --red-5: oklch(54% 0.17 24);
+    --red-1: #F0BC6D;
+    --red-2: #E8A33D;
+    --red-3: #D2992F;
+    --red-4: #AA7824;
+    --red-5: #81591B;
 
-    --green-1: oklch(64% 0.05 196);
-    --green-2: oklch(59% 0.05 196);
-    --green-3: oklch(55% 0.05 196);
-    --green-4: oklch(51% 0.05 196);
-    --green-5: oklch(47% 0.05 196);
+    --green-1: #A7C99A;
+    --green-2: #8FB57A;
+    --green-3: #7DA46B;
+    --green-4: #6B8E5C;
+    --green-5: #59784D;
 
-    --blue-1: oklch(75% 0.02 215);
-    --blue-2: oklch(70% 0.02 215);
-    --blue-3: oklch(65% 0.02 215);
-    --blue-4: oklch(60% 0.02 215);
-    --blue-5: oklch(55% 0.02 215);
+    --blue-1: #98B4C8;
+    --blue-2: #7E9DB5;
+    --blue-3: #6C899F;
+    --blue-4: #5A7488;
+    --blue-5: #485F71;
 
-    --yellow-1: oklch(90% 0.08 69);
-    --yellow-2: oklch(85% 0.08 69);
-    --yellow-3: oklch(80% 0.08 69);
-    --yellow-4: oklch(75% 0.08 69);
-    --yellow-5: oklch(70% 0.08 69);
+    --yellow-1: #F0BC6D;
+    --yellow-2: #E8A33D;
+    --yellow-3: #D2992F;
+    --yellow-4: #AA7824;
+    --yellow-5: #81591B;
 
-    --purple-1: oklch(73% 0.15 28);
-    --purple-2: oklch(68% 0.15 28);
-    --purple-3: oklch(63% 0.15 28);
-    --purple-4: oklch(58% 0.15 28);
-    --purple-5: oklch(53% 0.15 28);
+    --purple-1: #C0A8CB;
+    --purple-2: #A78BB5;
+    --purple-3: #8F759E;
+    --purple-4: #775F86;
+    --purple-5: #5F496E;
+
+    --status-danger: #C97064;
 }

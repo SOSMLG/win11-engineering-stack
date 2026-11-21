@@ -253,7 +253,7 @@ if ($Verify) {
     try {
       $vsJson = Get-Content $vsSet -Raw | ConvertFrom-Json
       $theme = Get-PropValue $vsJson 'workbench.colorTheme' ''
-      if ($theme -eq 'Darkmatter') { Log '  ok: vscodium darkmatter theme' }
+      if ($theme -eq 'Graphite Amber') { Log '  ok: vscodium graphite amber theme' }
       else { Log "  MISS: vscodium theme is $theme"; $miss++ }
     } catch { Log "  MISS: vscodium settings are not valid JSON"; $miss++ }
   } else { Log '  skip: vscodium settings not applied yet' }
@@ -933,18 +933,18 @@ if ((Test-Path (Split-Path $vs)) -or ($codium -and (Test-Path $codium))) {
   if (-not $DryRun) { New-Item -ItemType Directory -Force -Path (Split-Path $vs) | Out-Null }
   Copy-Config (Join-Path $Repo 'VSCodium\settings.json') $vs
   Copy-Config (Join-Path $Repo 'VSCodium\keybindings.json') (Join-Path $env:APPDATA 'VSCodium\User\keybindings.json')
-  # darkmatter theme ships as a folder extension. the folder name has to carry
+  # graphite amber theme ships as a folder extension. the folder name has to carry
   # the version or vscodium pretends it is not installed.
-  $themeDst = Join-Path $env:USERPROFILE '.vscode-oss\extensions\xfcemlg.darkmatter-theme-0.6.0'
+  $themeDst = Join-Path $env:USERPROFILE '.vscode-oss\extensions\xfcemlg.graphite-amber-theme-0.6.0'
   if ($DryRun) { Log "  [dry-run] would copy: $themeDst (plus drop any older versions)" }
   else {
     try {
       # a version bump would otherwise leave both folders there and vscodium gets grumpy.
-      Get-ChildItem (Split-Path $themeDst -Parent) -Directory -Filter 'xfcemlg.darkmatter-theme-*' -EA SilentlyContinue |
+      Get-ChildItem (Split-Path $themeDst -Parent) -Directory -Filter 'xfcemlg.graphite-amber-theme-*' -EA SilentlyContinue |
         Where-Object { $_.Name -ne (Split-Path $themeDst -Leaf) } |
         ForEach-Object { Remove-Item $_.FullName -Recurse -Force -EA SilentlyContinue; Log "  dropped old theme folder: $($_.Name)" }
       New-Item -ItemType Directory -Force -Path $themeDst | Out-Null
-      Copy-Item (Join-Path $Repo 'VSCodium\darkmatter-theme\*') $themeDst -Recurse -Force -EA Stop
+      Copy-Item (Join-Path $Repo 'VSCodium\graphite-amber-theme\*') $themeDst -Recurse -Force -EA Stop
       Log "  $themeDst"
     } catch { Log "  WARN vscodium theme: $_" }
   }
@@ -999,7 +999,7 @@ Copy-Fresh (Join-Path $Repo 'OBS\profiles\Recording\basic.ini') (Join-Path $env:
 # on re-run would wipe the name/email you set. (needs Copy-Fresh, so it lives down here.)
 Copy-Fresh (Join-Path $Repo 'Git\.gitconfig') (Join-Path $env:USERPROFILE '.gitconfig')
 # quickcss ships as a placeholder, so an untouched one upgrades to the real
-# darkmatter theme on re-run. a quickcss you edited yourself is kept.
+# graphite amber theme on re-run. a quickcss you edited yourself is kept.
 $qcss = Join-Path $env:APPDATA 'Vesktop\settings\quickcss.css'
 $qsrc = Join-Path $Repo 'Vesktop\quickcss.css'
 $qcur = $null

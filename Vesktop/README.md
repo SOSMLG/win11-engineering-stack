@@ -1,8 +1,8 @@
 # Vesktop
 Fresh installs get `%APPDATA%\Vesktop\settings.json`. Ran it already?
 Untouched, as it should be.
-- Theme: system24 recolored to the darkmatter palette (near-black + coral
-  `#e75353`) via `quickcss.css` (Vencord > QuickCSS > Enable, already on).
+- Theme: system24 recolored to the graphite amber palette (graphite #16181D
+  + amber #E8A33D) via `quickcss.css` (Vencord > QuickCSS > Enable, already on).
   Installer drops it into `%APPDATA%\Vesktop\settings\quickcss.css`. Re-run
   with `-ConfigsOnly` to push it again; an untouched placeholder is
   upgraded automatically, a quickcss you edited yourself is kept. the

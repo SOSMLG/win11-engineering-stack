@@ -7,6 +7,7 @@ format follows keep a changelog. versions are git tags like `v0.1.0`.
 - repository health files and read-only CI validation.
 
 ### changed
+- switched banners, badges, VSCodium, and Windows Terminal to Graphite Amber. the old theme family is gone.
 - renamed the repo to `win11-engineering-stack`. the old URL still redirects.
 - merged the modular daily installer, the daily config set and their docs into this repo. `Install.ps1` and `Validate.ps1` are the front doors for both profiles.
 - OpenCode now uses one V2 config with `providers` and `permissions`. the old root config is gone.

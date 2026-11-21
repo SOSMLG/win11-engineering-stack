@@ -118,7 +118,7 @@ function Invoke-Validate {
     if ($codium) {
         Add-ValidationResult -Status PASS -Check 'VSCodium' -Detail ((& codium --version 2>$null) -join ' ')
         $installed = @(& codium --list-extensions 2>$null)
-        $required = @('ms-python.python', 'charliermarsh.ruff', 'detachhead.basedpyright', 'Catppuccin.catppuccin-vsc')
+        $required = @('ms-python.python', 'charliermarsh.ruff', 'detachhead.basedpyright')
         $missing = @($required | Where-Object { $installed -notcontains $_ })
         if ($missing.Count -eq 0) {
             Add-ValidationResult -Status PASS -Check 'VSCodium extensions' -Detail 'required set installed'

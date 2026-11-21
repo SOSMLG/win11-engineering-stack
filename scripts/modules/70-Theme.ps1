@@ -6,27 +6,27 @@ function Set-TerminalTheme {
     }
 
     $scheme = @{
-        name                = 'Catppuccin Mocha'
-        background          = '#1E1E2E'
-        foreground          = '#CDD6F4'
-        cursorColor         = '#F5E0DC'
-        selectionBackground = '#585B70'
-        black               = '#45475A'
-        red                 = '#F38BA8'
-        green               = '#A6E3A1'
-        yellow              = '#F9E2AF'
-        blue                = '#89B4FA'
-        purple              = '#CBA6F7'
-        cyan                = '#94E2D5'
-        white               = '#BAC2DE'
-        brightBlack         = '#585B70'
-        brightRed           = '#F38BA8'
-        brightGreen         = '#A6E3A1'
-        brightYellow        = '#F9E2AF'
-        brightBlue          = '#89B4FA'
-        brightPurple        = '#CBA6F7'
-        brightCyan          = '#94E2D5'
-        brightWhite         = '#A6ADC8'
+        name                = 'Graphite Amber'
+        background          = '#16181D'
+        foreground          = '#D8D3C8'
+        cursorColor         = '#E8A33D'
+        selectionBackground = '#3A352C'
+        black               = '#25272C'
+        red                 = '#C97064'
+        green               = '#8FB57A'
+        yellow              = '#E8A33D'
+        blue                = '#7E9DB5'
+        purple              = '#A78BB5'
+        cyan                = '#79A9A6'
+        white               = '#D8D3C8'
+        brightBlack         = '#454A52'
+        brightRed           = '#DF9588'
+        brightGreen         = '#A7C99A'
+        brightYellow        = '#F0BC6D'
+        brightBlue          = '#98B4C8'
+        brightPurple        = '#C0A8CB'
+        brightCyan          = '#9CC4C1'
+        brightWhite         = '#F0ECE2'
     }
 
     $settings = @{}
@@ -46,7 +46,7 @@ function Set-TerminalTheme {
 
     $schemes = @($settings['schemes'])
     $names = @($schemes | ForEach-Object { Get-PropValue $_ 'name' '' })
-    if ($names -notcontains 'Catppuccin Mocha') {
+    if ($names -notcontains 'Graphite Amber') {
         $schemes += $scheme
     }
     $settings['schemes'] = $schemes
@@ -63,7 +63,7 @@ function Set-TerminalTheme {
         face = 'JetBrainsMono Nerd Font Mono'
         size = 11
     }
-    $defaults['colorScheme'] = 'Catppuccin Mocha'
+    $defaults['colorScheme'] = 'Graphite Amber'
     $defaults['useAcrylic'] = $false
     $defaults['opacity'] = 100
     $profiles['defaults'] = $defaults
@@ -85,9 +85,9 @@ function Set-WindowsTheme {
     Set-RegistryValue -Path 'HKCU:\Control Panel\Desktop\WindowMetrics' -Name 'MinAnimate' -Value '0' -Type String
 
     $dwm = 'HKCU:\Software\Microsoft\Windows\DWM'
-    Set-RegistryValue -Path $dwm -Name 'ColorizationColor' -Value 3225450676 -Type DWord
-    Set-RegistryValue -Path $dwm -Name 'ColorizationAfterglow' -Value 3225450676 -Type DWord
-    Set-RegistryValue -Path $dwm -Name 'AccentColorInactive' -Value 3235372776 -Type DWord
+    Set-RegistryValue -Path $dwm -Name 'ColorizationColor' -Value 3303580477 -Type DWord
+    Set-RegistryValue -Path $dwm -Name 'ColorizationAfterglow' -Value 3303580477 -Type DWord
+    Set-RegistryValue -Path $dwm -Name 'AccentColorInactive' -Value 3302136111 -Type DWord
 
     Set-RegistryValue -Path 'HKCU:\Control Panel\Desktop' -Name 'TileWallpaper' -Value '0' -Type String
     Set-RegistryValue -Path 'HKCU:\Control Panel\Colors' -Name 'Background' -Value '232 236 242' -Type String
@@ -113,7 +113,7 @@ $env:PYTHONUTF8 = '1'
 }
 
 function Invoke-Theme {
-    Write-Step 'Theme: light shell, dark editor'
+    Write-Step 'Theme: light shell, graphite amber editor'
 
     Set-WindowsTheme
 

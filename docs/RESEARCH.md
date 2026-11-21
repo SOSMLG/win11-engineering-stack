@@ -100,5 +100,5 @@ scans, and exclusions untouched.
 
 TIA Portal, MATLAB, and ONLYOFFICE are light-themed and do not tolerate dark
 injection well. The shell stays light; editors, terminals, and Vesktop use
-Catppuccin Mocha. This keeps dialogs readable and avoids white flashes against a
+Graphite Amber. This keeps dialogs readable and avoids white flashes against a
 dark desktop.

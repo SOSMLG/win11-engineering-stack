@@ -30,4 +30,4 @@
 ## Platform
 
 - Windows 11, PowerShell 7. Scripts must also run on Windows PowerShell 5.1.
-- Engineering apps use their native light theme. Editors and terminals use Catppuccin Mocha.
+- Engineering apps use their native light theme. Editors and terminals use Graphite Amber.

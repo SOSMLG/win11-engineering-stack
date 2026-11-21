@@ -26,7 +26,7 @@ engines per app, first hit wins: staged `-OfflineDir` files, winget, GitHub rele
 ## stored in this repo
 | item | where | license (confirm) |
 |---|---|---|
-| Darkmatter VSCodium theme | `VSCodium/darkmatter-theme/` | |
-| system24 darkmatter quickcss | `Vesktop/quickcss.css` | |
+| Graphite Amber VSCodium theme | `VSCodium/graphite-amber-theme/` | |
+| system24 graphite amber quickcss | `Vesktop/quickcss.css` | |
 
 add the license name and a link for each row. include a copy of any license that requires one.

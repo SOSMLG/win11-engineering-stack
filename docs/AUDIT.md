@@ -6,12 +6,12 @@ Date: 2026-11-21
 
 `C:\Users\Admin\Downloads\Ultimate-Win11-Setup-main\Ultimate-Win11-Setup-main`
 
-This is a Catppuccin ricing/dotfiles collection, not a Windows setup framework.
+This is a themed ricing/dotfiles collection, not a Windows setup framework.
 Only a few pieces fit an engineering workstation.
 
 | Item | Decision | Reason |
 |---|---|---|
-| `Terminal/settings.json` | Keep the scheme | Catppuccin Mocha + JetBrains Mono is readable and low contrast. |
+| `Terminal/settings.json` | Keep the scheme | Graphite Amber + JetBrains Mono is readable and low contrast. |
 | `VSCode/Settings/settings.json` | Cherry-pick | Keep cursor, theme, and layout ideas. Drop pets, animations, Copilot, and the invalid trailing commas. |
 | `PowerShell/Microsoft.PowerShell_profile.ps1` | Keep UTF-8 block | Drop `Clear-Host` and unconditional `fastfetch`. |
 | `Flow Launcher/Theme` | Optional | Only if Flow Launcher is used. PowerToys Run is lighter. |
@@ -49,7 +49,7 @@ antivirus or reliably enable .NET 3.5/IIS/MSMQ without WinSxS.
 
 - The source VSCodium settings use extensions that are unavailable or unwanted
   on Open VSX. The deployed set uses Python, debugpy, Jupyter, Ruff,
-  BasedPyright, autoDocstring, and Catppuccin.
+  BasedPyright and autoDocstring. The dark base uses local color customizations.
 - GitLens is not deployed. If it is already installed, the apps module removes
   it; the built-in Git view covers the common cases.
 - The source PowerShell profile is reduced to UTF-8 and Python UTF-8 settings.
