@@ -68,8 +68,11 @@ scans, and exclusions untouched.
 - KeePassXC for the vault. The script creates the folder, never a database.
 - LibreWolf profiles `personal`, `uni`, and `social`, each with its own cookie
   jar and sign-in. LibreWolf is already hardened; the script does not add
-  prefs that could break sites. Ungoogled Chromium is a valid alternative, but
-  LibreWolf's profile isolation and update path are simpler on Windows.
+  prefs that could break sites. The `librewolf.overrides.cfg` file uses
+  `defaultPref`, so UI choices win. Windows 11 protects the default browser
+  `UserChoice`; the installer prints the Settings step instead of forcing it.
+  Ungoogled Chromium is a valid alternative, but LibreWolf's profile isolation
+  and update path are simpler on Windows.
 - GitHub CLI uses SSH for Git; its other defaults stay as shipped.
 
 ## Desktop apps
@@ -83,6 +86,22 @@ scans, and exclusions untouched.
   because it rewrites settings on exit.
 - ONLYOFFICE default associations cannot be set silently. Windows 11 protects
   `UserChoice`; set them by hand in Settings.
+- qBittorrent ships with WebUI off, UPnP off, no web password in the repo, and a
+  loopback address only for a local opt-in. Configure a password in the app if
+  WebUI is enabled; the repository never stores one.
+- 7-Zip is checked at `C:\Program Files\7-Zip\7z.exe` as well as on `PATH`.
+  Some installers do not add `7z` to the shell path.
+- Windows Terminal keeps stock Windows PowerShell 5.1 and Command Prompt. The
+  old PowerShell 7 entry was stale on IoT images that never install `pwsh`.
+
+## Mem Reduct
+
+`Henry++.MemReduct` is optional because it needs admin rights and uses native
+memory APIs. The upstream source exposes settings such as `AutoreductEnable`,
+`AutoreductIntervalEnable`, `TrayLevelWarning`, and `TrayLevelDanger`. The repo
+does not guess values. It ships a comment-only `memreduct.ini` in the portable
+folder and lets the app write its own settings on first run. No autostart or
+scheduled cleanup is configured.
 
 ## FOSS replacements
 

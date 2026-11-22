@@ -4,13 +4,13 @@
     Read-only validation for the selected profile.
 
 .DESCRIPTION
+    -Profile daily calls scripts/Validate.ps1 and is the default.
     -Profile iot calls install-Win-Iot.ps1 -Verify.
-    -Profile daily calls scripts/Validate.ps1.
     Neither path writes settings.
 #>
 [CmdletBinding()]
 param(
-    [ValidateSet('daily', 'iot')][string]$Profile = 'iot'
+    [ValidateSet('daily', 'iot')][string]$Profile = 'daily'
 )
 
 Set-StrictMode -Version Latest

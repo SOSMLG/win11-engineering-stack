@@ -45,8 +45,11 @@ filters, resume, and the full flag list, read [CLI contract](docs/CLI.md).
 ```
 
 Exit 0 means the checked state is present. Exit 1 means at least one real check
-failed. These commands only read system state. The IoT `-Verify` path writes a
-log and transcript before the check.
+failed. Both paths only read system state. Neither writes a log, transcript, or
+report. `Install.ps1 -Verify` is an alias for the matching `Validate.ps1` call.
+
+Daily state is read-only with `.\Install.ps1 -Status`. It prints completed
+modules, pending reboot, and the next command.
 
 ## What the modules do
 
@@ -85,6 +88,16 @@ Editors and terminals use Graphite Amber. Windows stays light, and engineering
 apps keep their native light theme. See the
 [visual standard](https://github.com/SOSMLG/.github/blob/main/docs/THEME.md) or
 [الطابع البصري](https://github.com/SOSMLG/.github/blob/main/docs/THEME.ar.md).
+
+## Desktop apps
+
+See the [app inventory](docs/APPS.md) for install IDs, config paths, and manual steps.
+
+- 7-Zip is in both app lists. The IoT self-check also accepts the Program Files install path.
+- qBittorrent ships with WebUI off, UPnP off, no stored web password, and loopback only if WebUI is enabled locally. Existing configs are kept.
+- LibreWolf is the IoT browser. It gets three isolated profiles, Start Menu shortcuts, and safe `defaultPref` overrides. Default browser is a manual Settings step.
+- Mem Reduct is optional via `-IncludeOptional`. No autostart, no scheduled cleanup, native light UI.
+- Windows Terminal keeps one Graphite Amber scheme and no stale PowerShell 7 profile.
 
 ## OmniRoute and OpenCode
 

@@ -4,34 +4,38 @@
 
 ```powershell
 cd path\to\win11-engineering-stack
-.\scripts\Install.ps1 -DryRun
-.\scripts\Install.ps1
+.\Install.ps1 -Profile daily -DryRun
+.\Install.ps1 -Profile daily
 ```
 
 The script elevates itself once. If a reboot is required, it stops and prints the
 resume command. Run it after the reboot:
 
 ```powershell
-.\scripts\Install.ps1 -Resume
+.\Install.ps1 -Profile daily -Resume
 ```
 
 ## Common invocations
 
 ```powershell
 # OS features only, with the ISO payload.
-.\scripts\Install.ps1 -Only os -SxsPath D:\sources\sxs
+.\Install.ps1 -Profile daily -Only os -SxsPath D:\sources\sxs
 
 # Apps and editor extensions.
-.\scripts\Install.ps1 -Only apps
+.\Install.ps1 -Profile daily -Only apps
 
 # Engineering folders, MATLAB env, installer launch.
-.\scripts\Install.ps1 -Only engineering -TiaInstaller D:\TIA\Start.exe -MatlabInstaller D:\MATLAB\setup.exe
+.\Install.ps1 -Profile daily -Only engineering -TiaInstaller D:\TIA\Start.exe -MatlabInstaller D:\MATLAB\setup.exe
 
 # Theme and configs only.
-.\scripts\Install.ps1 -Only theme,configs
+.\Install.ps1 -Profile daily -Only theme,configs
 
-# Read-only report.
-.\scripts\Validate.ps1
+# Saved daily state and the next command.
+.\Install.ps1 -Profile daily -Status
+
+# Read-only reports. both are write-free.
+.\Validate.ps1
+.\Validate.ps1 -Profile iot
 ```
 
 ## What is manual
@@ -43,14 +47,18 @@ resume command. Run it after the reboot:
    `MATLABROOT` and `PATH` after the install.
 3. **ONLYOFFICE defaults**: Settings -> Apps -> Default apps -> ONLYOFFICE for
    `.docx`, `.xlsx`, `.pptx`.
-4. **LibreWolf**: open each profile shortcut and sign in separately.
-5. **KeePassXC**: create the database in `Documents\Vaults`.
-6. **OmniRoute**: open `http://127.0.0.1:20128/dashboard`, connect providers, and
+4. **LibreWolf**: open each profile shortcut and sign in separately. Set it as
+   default in Settings -> Apps -> Default apps -> Web browser. Windows protects
+   that choice, so the script only prints the step.
+5. **qBittorrent**: WebUI ships off. If you turn it on in the app, set a local
+   password there; no password is stored in the repo.
+6. **KeePassXC**: create the database in `Documents\Vaults`.
+7. **OmniRoute**: open `http://127.0.0.1:20128/dashboard`, connect providers, and
    confirm `OMNIROUTE_API_KEY` is a user environment variable. The installer
    also sets `OMNIROUTE_SERVER_HOST=127.0.0.1` and `REQUIRE_API_KEY=true`.
-7. **GitHub**: `gh auth login` if needed, then
+8. **GitHub**: `gh auth login` if needed, then
    `gh ssh-key add $HOME\.ssh\id_ed25519.pub`.
-8. **Reboot or sign out** once after the theme module so Windows applies the
+9. **Reboot or sign out** once after the theme module so Windows applies the
    light mode and accent.
 
 ## Troubleshooting
@@ -121,8 +129,9 @@ Rerun `.\scripts\Install.ps1 -Only engineering` after installing MATLAB. It sets
 
 ### LibreWolf profile creation fails
 
-Close every LibreWolf window, then rerun `-Only developer`. The profile name must
-not already exist in `%APPDATA%\LibreWolf\profiles.ini`.
+Close every LibreWolf window, then rerun `.\Install.ps1 -Profile daily -Only
+developer`. On IoT, rerun `install-Win-Iot.ps1 -ConfigsOnly`. The profile name
+must not already exist in `%APPDATA%\LibreWolf\profiles.ini`.
 
 ## Rollback
 

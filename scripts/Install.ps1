@@ -7,6 +7,9 @@
     Modular, idempotent setup for TIA Portal prerequisites, MATLAB paths,
     VSCodium, Git/gh, developer tools, OmniRoute, and OpenCode.
 
+.PARAMETER Status
+    Print saved module state and the next command. Reads state only.
+
 .PARAMETER DryRun
     Print every action without changing files, registry, services, or packages.
 
@@ -37,6 +40,7 @@
 #>
 [CmdletBinding()]
 param(
+    [switch]$Status,
     [switch]$DryRun,
     [string[]]$Only = @(),
     [switch]$Resume,
@@ -54,6 +58,27 @@ $ErrorActionPreference = 'Stop'
 $libPath = Join-Path $PSScriptRoot 'lib\Common.ps1'
 . $libPath
 
+if ($Status) {
+    $statusState = Get-StackState
+    $statusOrder = @('preflight', 'os', 'packages', 'apps', 'engineering', 'developer', 'omniroute', 'theme', 'configs', 'validate')
+    $statusDone = @($statusState.Completed)
+    $statusTodo = @($statusOrder | Where-Object { $statusDone -notcontains $_ })
+    Write-Host 'win11-engineering-stack status'
+    Write-Host "  state:  $script:StatePath"
+    Write-Host "  last:   $(if ($statusState.LastRun) { $statusState.LastRun } else { 'never' })"
+    Write-Host "  reboot: $($statusState.PendingReboot)"
+    Write-Host "  done:   $(if ($statusDone.Count) { $statusDone -join ', ' } else { 'none' })"
+    Write-Host "  todo:   $(if ($statusTodo.Count) { $statusTodo -join ', ' } else { 'none' })"
+    if ($statusState.PendingReboot) {
+        Write-Host '  next:   reboot, then .\Install.ps1 -Resume'
+    }
+    else {
+        Write-Host '  next:   .\Validate.ps1 -Profile daily'
+    }
+    return
+}
+
+Reset-WriteCounts
 $script:DryRun = [bool]$DryRun
 $script:Force = [bool]$Force
 $script:SxsPath = $SxsPath
@@ -93,7 +118,10 @@ if ($needsAdmin) {
     if ($MatlabInstaller) { $arguments += @('-MatlabInstaller', (& $quote $MatlabInstaller)) }
 
     $hostExe = (Get-Process -Id $PID).Path
-    Start-Process -FilePath $hostExe -Verb RunAs -ArgumentList ($arguments -join ' ')
+    $child = Start-Process -FilePath $hostExe -Verb RunAs -ArgumentList ($arguments -join ' ') -Wait -PassThru
+    if ($null -ne $child.ExitCode) {
+        exit $child.ExitCode
+    }
     return
 }
 
@@ -183,9 +211,14 @@ try {
             throw "Module function $functionName is missing. Check scripts\modules."
         }
 
+        $script:ModuleFailed = $false
         & $functionName
 
-        if (-not $DryRun) {
+        if ($script:ModuleFailed) {
+            $failed = $true
+            Write-Fail "module '$name' reported failure."
+        }
+        elseif (-not $DryRun) {
             if ($state.Completed -notcontains $name) {
                 $state.Completed += $name
             }
@@ -216,6 +249,13 @@ finally {
     $elapsed = (Get-Date) - $startedAt
     Write-Host ''
     Write-Host ("Finished in {0:mm\:ss}" -f $elapsed) -ForegroundColor White
+    Write-WriteSummary
+    if ($state.PendingReboot -and -not $DryRun) {
+        Write-Host '  next:   .\Install.ps1 -Resume' -ForegroundColor Yellow
+    }
+    else {
+        Write-Host '  next:   .\Validate.ps1 -Profile daily' -ForegroundColor Yellow
+    }
     if ($transcript) { Stop-Transcript | Out-Null }
 }
 

@@ -9,6 +9,7 @@
         "face": "JetBrainsMono Nerd Font Mono",
         "size": 11
       },
+      "startingDirectory": "%USERPROFILE%",
       "historySize": 10000,
       "padding": "8",
       "colorScheme": "Graphite Amber",
@@ -20,12 +21,6 @@
         "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
         "name": "Windows PowerShell",
         "commandline": "powershell.exe",
-        "hidden": false
-      },
-      {
-        "guid": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
-        "name": "PowerShell 7",
-        "commandline": "pwsh.exe",
         "hidden": false
       },
       {

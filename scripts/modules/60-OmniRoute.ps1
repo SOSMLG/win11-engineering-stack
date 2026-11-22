@@ -108,6 +108,7 @@ function Invoke-OmniRoute {
     $npm = Get-CommandPath 'npm'
     if (-not $node -or -not $npm) {
         Write-Fail 'Node.js and npm are required for OmniRoute.'
+        Set-ModuleFailed
         return
     }
     Write-Detail "node: $((& node --version 2>$null) -join '')"
@@ -123,6 +124,7 @@ function Invoke-OmniRoute {
             $code = Invoke-External -FilePath 'npm' -ArgumentList @('install', '-g', 'omniroute') -AllowFailure
             if ($code -ne 0) {
                 Write-Fail 'OmniRoute installation failed.'
+                Set-ModuleFailed
                 return
             }
             $cli = Get-CommandPath 'omniroute.cmd'

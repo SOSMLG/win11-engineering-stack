@@ -3,7 +3,7 @@
   My Win10/Win11 IoT (Enterprise) LTSC setup. Unattended, rerunnable.
 .DESCRIPTION
   Built for a tiny10 box with no store and usually no network
-  on first boot. PS 5.1, stock Windows desktop, Helium, VSCodium.
+  on first boot. PS 5.1, stock Windows desktop, LibreWolf, VSCodium.
   No extra shell, no extra window manager. Stock colors everywhere.
   Engines per app, first hit wins: staged -OfflineDir files, winget,
   github releases, direct vendor URLs. Log lands in C:\Windows\Logs\Win-Iot-Setup
@@ -46,15 +46,7 @@ Set-StrictMode -Version 2
 $Repo = Split-Path $MyInvocation.MyCommand.Path -Parent
 # -ConfigsOnly re-deploys user configs (VSCodium, Vesktop, qBittorrent, opencode,
 # terminal, ...) and nothing else. install phases are gated below.
-$Stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
-# C:\Windows\Logs needs admin. non-admin runs fall back to TEMP instead of dying.
-try { New-Item -ItemType Directory -Force -Path $LogDir -EA Stop | Out-Null }
-catch { $LogDir = Join-Path $env:TEMP 'Win-Iot-Setup'; New-Item -ItemType Directory -Force -Path $LogDir -EA SilentlyContinue | Out-Null }
-# non-admin runs land in TEMP, so the state dir follows the log dir there.
-if ($StateDir -eq 'C:\Windows\Logs\Win-Iot-Setup\state' -and $LogDir -ne 'C:\Windows\Logs\Win-Iot-Setup') { $StateDir = Join-Path $LogDir 'state' }
-$LogFile = Join-Path $LogDir "install-$Stamp.log"
-$transcriptOn = $false
-try { Start-Transcript -Path $LogFile -Force -EA Stop | Out-Null; $transcriptOn = $true } catch {}
+# log, state, and transcript start after -Verify, so the read-only path writes nothing.
 # warn count lands in the run report. it is the number a tired human reads first.
 $script:warnCount = 0
 function Log($m) {
@@ -277,9 +269,18 @@ if ($Verify) {
   } else { Log '  skip: OmniRoute is not listening yet' }
 
   if ($miss) { Log "Verify: $miss thing(s) missing." } else { Log 'Verify: all good.' }
-  if ($transcriptOn) { try { Stop-Transcript | Out-Null } catch {} }
   exit $(if ($miss) { 1 } else { 0 })
 }
+
+$Stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
+# C:\Windows\Logs needs admin. non-admin runs fall back to TEMP instead of dying.
+try { New-Item -ItemType Directory -Force -Path $LogDir -EA Stop | Out-Null }
+catch { $LogDir = Join-Path $env:TEMP 'Win-Iot-Setup'; New-Item -ItemType Directory -Force -Path $LogDir -EA SilentlyContinue | Out-Null }
+# non-admin runs land in TEMP, so the state dir follows the log dir there.
+if ($StateDir -eq 'C:\Windows\Logs\Win-Iot-Setup\state' -and $LogDir -ne 'C:\Windows\Logs\Win-Iot-Setup') { $StateDir = Join-Path $LogDir 'state' }
+$LogFile = Join-Path $LogDir "install-$Stamp.log"
+$transcriptOn = $false
+try { Start-Transcript -Path $LogFile -Force -EA Stop | Out-Null; $transcriptOn = $true } catch {}
 
 # one-shot Win-Iot-Setup task already fired. remove it so it never refires.
 if ($DryRun) { Log '  [dry-run] would remove the one-shot Win-Iot-Setup scheduled task.' }
@@ -537,7 +538,6 @@ if (-not $ConfigsOnly) {
 
 # ---------- 2a. github-direct. no package manager, straight off release pages. ----------
 # patterns verified against the live releases api. x64 only, this box is x64.
-# helium has no assets on its releases page, so it stays staged-only.
 # unauthenticated api = 60 calls/hr, this runs max 9 per pass. cached under TEMP
 # so re-runs skip the download.
 $gitMap = @{
@@ -653,7 +653,7 @@ if (-not $ConfigsOnly) {
 }
 # 4.8 is already in the image. moving on.
 $coreApps = @(
-  'ImputNet.Helium',
+  'LibreWolf.LibreWolf',
   'VSCodium.VSCodium',
   'Vencord.Vesktop',
   'Telegram.TelegramDesktop',
@@ -680,7 +680,7 @@ $shellApps = @(
   'Fastfetch-cli.Fastfetch'
 )
 $coreApps += $shellApps
-$optionalApps = @('Obsidian.Obsidian','Spotify.Spotify')
+$optionalApps = @('Obsidian.Obsidian','Spotify.Spotify','Henry++.MemReduct')
 if ($IncludeOptional) { $coreApps += $optionalApps }
 # terminal wants win10 1903+. on ltsc 2019 it would just fail every run.
 $wtBuild = 0
@@ -987,6 +987,64 @@ if (-not $ConfigsOnly) {
   }
 } else { Log '  python libs skipped (configs-only).' }
 
+function New-IotShortcut {
+  param(
+    [Parameter(Mandatory = $true)][string]$Path,
+    [Parameter(Mandatory = $true)][string]$Target,
+    [string]$Arguments = ''
+  )
+  if ($DryRun) { Log "  [dry-run] would create shortcut: $Path"; return }
+  $dir = Split-Path $Path
+  if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Force -Path $dir | Out-Null }
+  $shell = New-Object -ComObject WScript.Shell
+  $lnk = $shell.CreateShortcut($Path)
+  $lnk.TargetPath = $Target
+  $lnk.Arguments = $Arguments
+  $lnk.IconLocation = $Target
+  $lnk.Save()
+  Log "  shortcut: $Path"
+}
+
+function Get-LibreWolfPathIot {
+  $candidates = @(
+    'C:\Program Files\LibreWolf\librewolf.exe',
+    (Join-Path $env:LOCALAPPDATA 'LibreWolf\librewolf.exe'),
+    (Get-CmdPath 'librewolf')
+  )
+  foreach ($candidate in $candidates) {
+    if ($candidate -and (Test-Path $candidate)) { return $candidate }
+  }
+  return $null
+}
+
+function Set-LibreWolfProfilesIot {
+  $lw = Get-LibreWolfPathIot
+  if (-not $lw) { Log '  LibreWolf not found yet - profiles skipped.'; return }
+
+  $dataRoot = Join-Path $env:APPDATA 'LibreWolf'
+  $profilesRoot = Join-Path $dataRoot 'Profiles'
+  $iniPath = Join-Path $dataRoot 'profiles.ini'
+  $existing = ''
+  if (Test-Path $iniPath) { $existing = Get-Content $iniPath -Raw }
+  $shortcutFolder = Join-Path $env:APPDATA 'Microsoft\Windows\Start Menu\Programs\LibreWolf Profiles'
+
+  if (-not $DryRun -and -not (Test-Path $profilesRoot)) { New-Item -ItemType Directory -Force -Path $profilesRoot | Out-Null }
+
+  foreach ($profile in @('personal', 'uni', 'social')) {
+    $profilePath = Join-Path $profilesRoot $profile
+    $known = $existing -match ('(?m)^Name=' + [regex]::Escape($profile) + '\r?$')
+    if ($known -and (Test-Path $profilePath)) { Log "  profile exists: $profile"; continue }
+    if ($DryRun) { Log "  [dry-run] would create LibreWolf profile $profile at $profilePath" }
+    else {
+      $code = Invoke-Native { & $lw '-CreateProfile' "$profile $profilePath" }
+      if ($code -eq 0) { Log "  profile: $profile" } else { Log "  WARN profile ${profile}: exit $code" }
+    }
+    $shortcut = Join-Path $shortcutFolder "$profile.lnk"
+    if (Test-Path $shortcut) { Log "  shortcut exists: $shortcut" }
+    else { New-IotShortcut -Path $shortcut -Target $lw -Arguments "-P `"$profile`" -no-remote" }
+  }
+}
+
 # fresh installs get configs; -ConfigsOnly (or -Force) re-deploys over existing ones.
 function Copy-Fresh($src, $dst) {
   if (($ConfigsOnly -or $Force) -or -not (Test-Path $dst)) { Copy-Config $src $dst }
@@ -1021,11 +1079,11 @@ if (Test-Path $ocSkillSrc) {
 if ($wtOk) { Copy-Fresh (Join-Path $Repo 'WindowsTerminal\settings.json') (Join-Path $env:LOCALAPPDATA 'Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json') }
 $ocPlugins = Join-Path $env:USERPROFILE '.config\opencode\plugins'
 if (-not $DryRun -and -not (Test-Path $ocPlugins)) { New-Item -ItemType Directory -Force -Path $ocPlugins | Out-Null }
-if (Test-Path (Join-Path $Repo 'Helium\master_preferences')) {
-  $heData = Join-Path $env:LOCALAPPDATA 'Helium\User Data'
-  if (-not (Test-Path $heData)) { Copy-Config (Join-Path $Repo 'Helium\master_preferences') (Join-Path $heData 'master_preferences') }
-  else { Log '  Helium already ran - master_preferences ignored (change settings in UI).' }
-}
+# librewolf: safe defaults plus three isolated profiles. fresh-only overrides.
+Copy-Fresh (Join-Path $Repo 'LibreWolf\librewolf.overrides.cfg') (Join-Path $env:USERPROFILE '.librewolf\librewolf.overrides.cfg')
+Set-LibreWolfProfilesIot
+# mem reduct: repo ships a comment-only ini so the app has a stable config file.
+Copy-Fresh (Join-Path $Repo 'MemReduct\memreduct.ini') (Join-Path $env:APPDATA 'Henry++\Mem Reduct\memreduct.ini')
 
 # drop your .ttfs in Fonts/ and they get installed. admin only, windows rules.
 $fontDir = Join-Path $Repo 'Fonts'
@@ -1050,22 +1108,9 @@ Complete-Phase 'configs'
 if ((-not $ConfigsOnly) -and (Should-Run 'autostart')) {
 Log 'Autostart...'
 Start-Phase 'autostart'
-# helium default. per-user, needs no admin.
-if ($DryRun) { Log '  [dry-run] would set Helium as default browser.' }
-else {
-try {
-  $helium = Get-CmdPath 'helium'
-  if (-not $helium) {
-    foreach ($root in @("$env:LOCALAPPDATA\Helium", "$env:ProgramFiles\Helium", "${env:ProgramFiles(x86)}\Helium")) {
-      if (-not (Test-Path $root)) { continue }
-      $h = Get-ChildItem $root -Filter 'helium.exe' -Recurse -EA SilentlyContinue | Select-Object -First 1
-      if ($h) { $helium = $h.FullName; break }
-    }
-  }
-  if ($helium) { Start-Process $helium -ArgumentList '--make-default-browser' -WindowStyle Hidden -EA Stop; Log '  Helium default-browser requested (confirm in Settings > Apps > Default apps).' }
-  else { Log '  Helium not found yet - set default manually in Settings > Apps > Default apps.' }
-} catch { Log "  WARN default browser: $_" }
-}
+# default browser is a Windows UserChoice action. print the step, never force it.
+if ($DryRun) { Log '  [dry-run] would print the LibreWolf default-browser step.' }
+else { Log '  set LibreWolf as default browser in Settings > Apps > Default apps.' }
 
 # auth can't run unattended, so it goes on the desktop as a double-click thing.
 if ($DryRun) { Log '  [dry-run] would write Desktop Win-Iot-Finish.cmd.' }
@@ -1095,7 +1140,7 @@ if (-not $ConfigsOnly) {
     @{ n='node'; cmd={ node --version } },
     @{ n='codium'; cmd={ & (Get-CmdPath 'codium') --version } },
     @{ n='opencode'; cmd={ opencode --version } },
-    @{ n='7zip'; cmd={ Get-Command 7z -EA Stop | Out-Null } }
+    @{ n='7zip'; cmd={ if (-not (Get-Command 7z -EA SilentlyContinue) -and -not (Test-Path 'C:\Program Files\7-Zip\7z.exe')) { throw '7-Zip not found' } } }
   )) {
     if ((Invoke-Native $s.cmd) -eq 0) { Log "  smoke ok: $($s.n)" }
     else { Log "  smoke MISSING: $($s.n)" }
@@ -1148,6 +1193,7 @@ Log 'NEXT:'
 Log '  1. reboot, stock desktop as-is.'
 Log '  2. double-click Desktop Win-Iot-Finish.cmd (opencode auth + optional password).'
 Log '  3. MATLAB via campus license + USB-serial drivers (CH340/CP210x/ST-Link) manually.'
+Log '  4. set LibreWolf as default browser in Settings > Apps > Default apps.'
 }
 if ($Reboot -and -not $DryRun) {
   Log 'rebooting in 60s (-Reboot). save your stuff.'

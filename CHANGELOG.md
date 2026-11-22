@@ -5,8 +5,14 @@ format follows keep a changelog. versions are git tags like `v0.1.0`.
 ## [Unreleased]
 ### added
 - repository health files and read-only CI validation.
+- `docs/APPS.md` with install IDs, config paths, theme scope, and manual steps for the desktop apps.
+- configured LibreWolf and Mem Reduct folders. LibreWolf gets safe `defaultPref` overrides and three profiles; Mem Reduct gets a comment-only portable config.
 
 ### changed
+- the IoT browser is now `LibreWolf.LibreWolf` with configured profiles and overrides. Default browser is a printed Settings step, not a forced launch.
+- qBittorrent now ships with WebUI off, UPnP off, no web password in the repo, and loopback only for local opt-in.
+- Windows Terminal keeps Windows PowerShell 5.1 and Command Prompt, starts in the user profile, and drops the stale PowerShell 7 entry.
+- daily and IoT VSCodium settings now activate the bundled Graphite Amber theme instead of a default theme with duplicate color overrides.
 - rewrote the README around quick start, profiles, verification, and repo layout. added `QUICKSTART.md` and local Graphite Amber preview cards. refreshed repo description and topics.
 - switched banners, badges, VSCodium, and Windows Terminal to Graphite Amber. the old theme family is gone.
 - renamed the repo to `win11-engineering-stack`. the old URL still redirects.
@@ -27,6 +33,10 @@ format follows keep a changelog. versions are git tags like `v0.1.0`.
 - deleted the `tests/` suite on request. `-DryRun` is the remaining preflight check.
 
 ### fixed
+- IoT `-Verify` now runs before log, state, transcript, and report setup, so the read-only path writes nothing.
+- `Install.ps1 -Verify` is an alias for the matching validator, `Install.ps1 -Status` reports saved daily state, and `Validate.ps1` defaults to `daily`.
+- the UAC relaunch waits for the elevated child and returns its exit code. daily modules can mark failure, and the run summary prints ok, skip, warn, and fail counts with the next command.
+- the IoT 7-Zip smoke test accepts `C:\Program Files\7-Zip\7z.exe` when `7z` is not on `PATH`.
 - IoT `-Verify` now reads the VSCodium theme property directly. the old call used a helper that the standalone script never loaded, so existing settings were misreported as invalid JSON.
 - dry-run output now says that logs and the IoT report are still written. theme and config messages no longer claim a write happened in dry-run.
 - daily module discovery now uses `-File`, and preflight no longer creates the log root that the front door already creates.

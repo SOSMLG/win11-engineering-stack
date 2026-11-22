@@ -42,6 +42,7 @@ function Enable-OptionalFeatureSafe {
     }
     catch {
         Write-Fail "$Name could not be enabled: $($_.Exception.Message)"
+        Set-ModuleFailed
         return $false
     }
 }
