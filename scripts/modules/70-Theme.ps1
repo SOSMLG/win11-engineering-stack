@@ -63,16 +63,42 @@ function Set-TerminalTheme {
         face = 'JetBrainsMono Nerd Font Mono'
         size = 11
     }
+    $defaults['startingDirectory'] = '%USERPROFILE%'
     $defaults['colorScheme'] = 'Graphite Amber'
     $defaults['useAcrylic'] = $false
     $defaults['opacity'] = 100
     $profiles['defaults'] = $defaults
     $settings['profiles'] = $profiles
+    if (-not $settings.ContainsKey('defaultProfile')) {
+        $settings['defaultProfile'] = '{61c54bbd-c2c6-5271-96e7-009a87ff44bf}'
+    }
     $settings['theme'] = 'dark'
 
     Write-JsonFile -Path $path -Value $settings -NoMerge
     if ($script:DryRun) { Write-Detail "[dry-run] terminal theme would be written: $path" }
     else { Write-Ok "terminal theme applied: $path" }
+}
+
+function Install-VSCodiumTheme {
+    $source = Join-Path $script:RepoRoot 'VSCodium\graphite-amber-theme'
+    if (-not (Test-Path $source)) {
+        Write-Warn "VSCodium theme folder missing: $source"
+        return
+    }
+
+    $target = Join-Path $env:USERPROFILE '.vscode-oss\extensions\xfcemlg.graphite-amber-theme-0.6.0'
+    if (Test-Path $target) {
+        Write-Skip "VSCodium Graphite Amber theme exists: $target"
+        return
+    }
+    if ($script:DryRun) {
+        Write-Detail "[dry-run] install VSCodium Graphite Amber theme: $target"
+        return
+    }
+
+    New-Item -ItemType Directory -Path $target -Force | Out-Null
+    Get-ChildItem -LiteralPath $source | Copy-Item -Destination $target -Recurse -Force
+    Write-Ok "VSCodium Graphite Amber theme installed: $target"
 }
 
 function Set-WindowsTheme {
@@ -127,6 +153,7 @@ function Invoke-Theme {
     }
 
     Set-TerminalTheme
+    Install-VSCodiumTheme
     Set-PowerShellProfile
 
     Write-Detail 'Windows UI changes apply at the next sign-in.'

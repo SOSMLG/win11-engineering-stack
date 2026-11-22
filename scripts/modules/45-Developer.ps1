@@ -154,8 +154,14 @@ function Set-LibreWolfProfiles {
             Write-Detail "[dry-run] create LibreWolf profile $profile at $profilePath"
         }
         else {
-            Invoke-External -FilePath $librewolf -ArgumentList @('-CreateProfile', "$profile $profilePath") -AllowFailure | Out-Null
-            Write-Ok "LibreWolf profile: $profile"
+            $code = Invoke-External -FilePath $librewolf -ArgumentList @('-CreateProfile', "$profile $profilePath") -AllowFailure
+            if ($code -eq 0) {
+                Write-Ok "LibreWolf profile: $profile"
+            }
+            else {
+                Write-Fail "LibreWolf profile ${profile}: exit $code"
+                Set-ModuleFailed
+            }
         }
 
         $shortcut = Join-Path $shortcutFolder "$profile.lnk"

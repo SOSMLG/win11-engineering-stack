@@ -15,6 +15,11 @@ if (-not (Get-Variable -Name Force -Scope Script -ErrorAction SilentlyContinue))
 }
 $script:BackupSession = $null
 $script:BackedUp = @{}
+$script:CountOk = 0
+$script:CountSkip = 0
+$script:CountWarn = 0
+$script:CountFail = 0
+$script:ModuleFailed = $false
 
 function Write-Step {
     param([string]$Message)
@@ -29,22 +34,42 @@ function Write-Detail {
 
 function Write-Ok {
     param([string]$Message)
+    $script:CountOk = $script:CountOk + 1
     Write-Host "   [ok] $Message" -ForegroundColor Green
 }
 
 function Write-Skip {
     param([string]$Message)
+    $script:CountSkip = $script:CountSkip + 1
     Write-Host "   [skip] $Message" -ForegroundColor Yellow
 }
 
 function Write-Warn {
     param([string]$Message)
+    $script:CountWarn = $script:CountWarn + 1
     Write-Host "   [warn] $Message" -ForegroundColor Yellow
 }
 
 function Write-Fail {
     param([string]$Message)
+    $script:CountFail = $script:CountFail + 1
     Write-Host "   [fail] $Message" -ForegroundColor Red
+}
+
+function Reset-WriteCounts {
+    $script:CountOk = 0
+    $script:CountSkip = 0
+    $script:CountWarn = 0
+    $script:CountFail = 0
+    $script:ModuleFailed = $false
+}
+
+function Write-WriteSummary {
+    Write-Host ("summary: ok {0}, skip {1}, warn {2}, fail {3}" -f $script:CountOk, $script:CountSkip, $script:CountWarn, $script:CountFail) -ForegroundColor White
+}
+
+function Set-ModuleFailed {
+    $script:ModuleFailed = $true
 }
 
 function Test-Admin {

@@ -11,8 +11,8 @@ elevates itself when a step needs it.
 ```
 
 `-DryRun` prints planned writes, downloads, and installs. it does not change
-system settings, installs, or config files. logs and a report are still written.
-read the output before the real run.
+system settings, installs, or config files. daily still writes its log and
+transcript; iot also writes a report. read the output before the real run.
 
 ## 2. run a profile
 
@@ -28,28 +28,41 @@ old one-click flow.
 ## 3. verify without writing
 
 ```powershell
-.\Validate.ps1 -Profile daily
-.\Validate.ps1 -Profile iot
+.\Install.ps1 -Profile daily -Verify
+.\Install.ps1 -Profile iot -Verify
 ```
 
-exit 0 means the checked state is present. exit 1 means at least one real check
-failed. host-only misses are reported as `FAIL` or `WARN` and do not change the
-machine.
+`-Verify` on the front door calls the matching validator. you can also call
+`Validate.ps1` directly; it defaults to `daily`. exit 0 means the checked state
+is present. exit 1 means at least one real check failed. neither path writes a
+log, transcript, report, or setting.
+
+## 4. read daily state
+
+```powershell
+.\Install.ps1 -Profile daily -Status
+```
+
+`-Status` prints completed modules, pending reboot, and the next command. it
+reads the saved state file only.
 
 ## common filters
 
 ```powershell
-.\scripts\Install.ps1 -Only os,apps -SxsPath D:\sources\sxs
-.\scripts\Install.ps1 -Only engineering -TiaInstaller D:\TIA\Start.exe -MatlabInstaller D:\MATLAB\setup.exe
-.\scripts\Install.ps1 -Resume
+.\Install.ps1 -Profile daily -Only os,apps -SxsPath D:\sources\sxs
+.\Install.ps1 -Profile daily -Only engineering -TiaInstaller D:\TIA\Start.exe -MatlabInstaller D:\MATLAB\setup.exe
+.\Install.ps1 -Profile daily -Resume
+.\Install.ps1 -Profile iot -ConfigsOnly
 ```
 
 `install-Win-Iot.ps1 -?` lists the full IoT flag set. useful ones are
 `-Unattended`, `-ConfigsOnly`, `-OfflineDir`, `-NoWingetBootstrap`,
-`-DriverDir`, `-Only`, `-SkipApps`, and `-Fixes`.
+`-DriverDir`, `-Only`, `-SkipApps`, and `-IncludeOptional`. Mem Reduct is an
+optional IoT app.
 
 ## where to go next
 
+- [app inventory](docs/APPS.md) for install IDs, config paths, and manual steps
 - [CLI contract](docs/CLI.md) for front doors and flag meanings
 - [runbook](docs/RUNBOOK.md) for run order and manual steps
 - [security](SECURITY.md) for image assumptions and secrets

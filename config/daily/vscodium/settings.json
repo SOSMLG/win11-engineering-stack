@@ -12,8 +12,10 @@
   "extensions.autoCheckUpdates": false,
   "update.mode": "none",
   "update.showReleaseNotes": false,
-  "editor.fontFamily": "'JetBrains Mono', 'Cascadia Code', Consolas, monospace",
+  "editor.fontFamily": "JetBrainsMono Nerd Font Mono, Cascadia Mono, Consolas",
   "editor.fontSize": 13,
+  "workbench.colorTheme": "Graphite Amber",
+  "workbench.iconTheme": "vs-seti",
   "editor.fontLigatures": true,
   "editor.cursorSmoothCaretAnimation": "on",
   "editor.renderWhitespace": "boundary",
@@ -41,6 +43,8 @@
   "python.testing.pytestEnabled": true,
   "jupyter.askForKernelRestart": false,
   "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "terminal.integrated.fontFamily": "JetBrainsMono Nerd Font Mono, Cascadia Mono, Consolas",
+  "terminal.integrated.fontSize": 12,
   "[python]": {
     "editor.defaultFormatter": "ms-python.python",
     "editor.tabSize": 4

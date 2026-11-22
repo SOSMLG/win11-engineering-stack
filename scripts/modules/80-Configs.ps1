@@ -24,6 +24,28 @@ function Set-VSCodiumConfig {
     else { Write-Ok "VSCodium settings merged: $target" }
 }
 
+function Set-LibreWolfConfig {
+    $source = Join-Path $script:RepoRoot 'LibreWolf\librewolf.overrides.cfg'
+    if (-not (Test-Path $source)) {
+        Write-Warn "LibreWolf overrides template missing: $source"
+        return
+    }
+
+    $target = Join-Path $env:USERPROFILE '.librewolf\librewolf.overrides.cfg'
+    if (Test-Path $target) {
+        Write-Skip "LibreWolf overrides kept: $target"
+        return
+    }
+    if ($script:DryRun) {
+        Write-Detail "[dry-run] LibreWolf overrides would be written: $target"
+        return
+    }
+
+    New-Item -ItemType Directory -Path (Split-Path $target) -Force | Out-Null
+    Copy-Item -LiteralPath $source -Destination $target -Force
+    Write-Ok "LibreWolf overrides written: $target"
+}
+
 function Set-OpenCodeConfig {
     $source = Join-Path $script:ConfigRoot 'opencode\opencode.json'
     if (-not (Test-Path $source)) {
@@ -95,11 +117,12 @@ function Set-VesktopConfig {
 }
 
 function Invoke-Configs {
-    Write-Step 'Configs: editor, OpenCode, Vesktop'
+    Write-Step 'Configs: editor, OpenCode, Vesktop, LibreWolf'
 
     Set-VSCodiumConfig
     Set-OpenCodeConfig
     Set-VesktopConfig
+    Set-LibreWolfConfig
 
     Write-Detail 'Config backups:'
     if ($script:BackupSession) {
