@@ -900,17 +900,13 @@ if ($DriverDir -and (Test-Path $DriverDir) -and (-not $ConfigsOnly)) {
 
 Log 'NOTE manual-only: ExplorerBlurMica (Maplespe releases, optional), Spicetify (after Spotify: Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/spicetify/cli/main/install.ps1 | Invoke-Expression).'
 
+. (Join-Path $PSScriptRoot 'scripts\modules\iot\Helpers.ps1')
+
 # ---------- 3. configs ----------
 if (Should-Run 'configs') {
 Log 'Configs...'
 Start-Phase 'configs'
-function Copy-Config($src, $dst) {
-  if (-not (Test-Path $src)) { Log "  SKIP missing in repo (not fatal): $src"; return }
-  if ($DryRun) { Log "  [dry-run] would copy: $dst"; return }
-  New-Item -ItemType Directory -Force -Path (Split-Path $dst) | Out-Null
-  Copy-Item $src $dst -Force -EA Stop
-  Log "  $dst"
-}
+# Copy-Config provided by scripts/modules/iot/Helpers.ps1
 # stock PS 5.1 profile lives under WindowsPowerShell in docs. that's just how it is.
 $docPS = Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'WindowsPowerShell\Microsoft.PowerShell_profile.ps1'
 Copy-Config (Join-Path $Repo 'PowerShell\Microsoft.PowerShell_profile.ps1') $docPS
@@ -988,69 +984,14 @@ if (-not $ConfigsOnly) {
   }
 } else { Log '  python libs skipped (configs-only).' }
 
-function New-IotShortcut {
-  param(
-    [Parameter(Mandatory = $true)][string]$Path,
-    [Parameter(Mandatory = $true)][string]$Target,
-    [string]$Arguments = ''
-  )
-  if ($DryRun) { Log "  [dry-run] would create shortcut: $Path"; return }
-  $dir = Split-Path $Path
-  if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Force -Path $dir | Out-Null }
-  $shell = New-Object -ComObject WScript.Shell
-  $lnk = $shell.CreateShortcut($Path)
-  $lnk.TargetPath = $Target
-  $lnk.Arguments = $Arguments
-  $lnk.IconLocation = $Target
-  $lnk.Save()
-  Log "  shortcut: $Path"
-}
+# New-IotShortcut provided by scripts/modules/iot/Helpers.ps1
 
-function Get-LibreWolfPathIot {
-  $candidates = @(
-    'C:\Program Files\LibreWolf\librewolf.exe',
-    (Join-Path $env:LOCALAPPDATA 'LibreWolf\librewolf.exe'),
-    (Get-CmdPath 'librewolf')
-  )
-  foreach ($candidate in $candidates) {
-    if ($candidate -and (Test-Path $candidate)) { return $candidate }
-  }
-  return $null
-}
+# Get-LibreWolfPathIot provided by scripts/modules/iot/Helpers.ps1
 
-function Set-LibreWolfProfilesIot {
-  $lw = Get-LibreWolfPathIot
-  if (-not $lw) { Log '  LibreWolf not found yet - profiles skipped.'; return }
-
-  $dataRoot = Join-Path $env:APPDATA 'LibreWolf'
-  $profilesRoot = Join-Path $dataRoot 'Profiles'
-  $iniPath = Join-Path $dataRoot 'profiles.ini'
-  $existing = ''
-  if (Test-Path $iniPath) { $existing = Get-Content $iniPath -Raw }
-  $shortcutFolder = Join-Path $env:APPDATA 'Microsoft\Windows\Start Menu\Programs\LibreWolf Profiles'
-
-  if (-not $DryRun -and -not (Test-Path $profilesRoot)) { New-Item -ItemType Directory -Force -Path $profilesRoot | Out-Null }
-
-  foreach ($profile in @('personal', 'uni', 'social')) {
-    $profilePath = Join-Path $profilesRoot $profile
-    $known = $existing -match ('(?m)^Name=' + [regex]::Escape($profile) + '\r?$')
-    if ($known -and (Test-Path $profilePath)) { Log "  profile exists: $profile"; continue }
-    if ($DryRun) { Log "  [dry-run] would create LibreWolf profile $profile at $profilePath" }
-    else {
-      $code = Invoke-Native { & $lw '-CreateProfile' "$profile $profilePath" }
-      if ($code -eq 0) { Log "  profile: $profile" } else { Log "  WARN profile ${profile}: exit $code" }
-    }
-    $shortcut = Join-Path $shortcutFolder "$profile.lnk"
-    if (Test-Path $shortcut) { Log "  shortcut exists: $shortcut" }
-    else { New-IotShortcut -Path $shortcut -Target $lw -Arguments "-P `"$profile`" -no-remote" }
-  }
-}
+# Set-LibreWolfProfilesIot provided by scripts/modules/iot/Helpers.ps1
 
 # fresh installs get configs; -ConfigsOnly (or -Force) re-deploys over existing ones.
-function Copy-Fresh($src, $dst) {
-  if (($ConfigsOnly -or $Force) -or -not (Test-Path $dst)) { Copy-Config $src $dst }
-  else { Log "  keep existing: $dst" }
-}
+# Copy-Fresh provided by scripts/modules/iot/Helpers.ps1
 Copy-Fresh (Join-Path $Repo 'Vesktop\settings.json') (Join-Path $env:APPDATA 'Vesktop\settings.json')
 Copy-Fresh (Join-Path $Repo 'qBittorrent\qbittorrent.ini') (Join-Path $env:APPDATA 'qBittorrent\qbittorrent.ini')
 Copy-Fresh (Join-Path $Repo 'VLC\vlcrc') (Join-Path $env:APPDATA 'vlc\vlcrc')
