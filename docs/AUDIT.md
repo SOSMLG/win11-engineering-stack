@@ -14,7 +14,7 @@ Only a few pieces fit an engineering workstation.
 | `Terminal/settings.json` | Keep the scheme | Graphite Amber + JetBrains Mono is readable and low contrast. |
 | `VSCode/Settings/settings.json` | Cherry-pick | Keep cursor, theme, and layout ideas. Drop pets, animations, Copilot, and the invalid trailing commas. |
 | `PowerShell/Microsoft.PowerShell_profile.ps1` | Keep UTF-8 block | Drop `Clear-Host` and unconditional `fastfetch`. |
-| `Flow Launcher/Theme` | Optional | Only if Flow Launcher is used. PowerToys Run is lighter. |
+| `Flow Launcher/Theme` | Drop | Start search covers launches; no extra background app. |
 | `Discord/System24 Theme` | Optional | Can be imported into Vesktop/Vencord. |
 | `YASB`, `GlazeWM`, `Komorebi` | Drop | Two tiling WMs plus a custom bar add startup complexity and fight TIA/MATLAB dialogs. |
 | `Windhawk`, `File Explorer` blur | Drop | Explorer/taskbar injection is a stability risk. The source README warns about crashes. |

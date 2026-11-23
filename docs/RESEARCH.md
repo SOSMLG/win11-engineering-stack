@@ -113,7 +113,7 @@ scheduled cleanup is configured.
 | Telegram Desktop | MercuryGram (manual) | Portable, pinned release. |
 | WinRAR | 7-Zip | No nag screen. |
 | Browser password store | KeePassXC | Local vault, no cloud. |
-| Flow Launcher | PowerToys Run | One less background app. |
+| Flow Launcher | Windows Start search | No extra background app. |
 
 ## Theme
 
