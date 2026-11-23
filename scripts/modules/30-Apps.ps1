@@ -178,7 +178,6 @@ function Invoke-Apps {
         Install-AppPackage -Id 'Microsoft.VCRedist.2015+.x86' -Name 'Visual C++ 2015-2022 x86'
         Install-AppPackage -Id 'Microsoft.EdgeWebView2Runtime' -Name 'WebView2 Runtime'
 
-        Install-AppPackage -Id 'Microsoft.PowerToys' -Name 'PowerToys'
         Install-AppPackage -Id 'KeePassXCTeam.KeePassXC' -Name 'KeePassXC'
         Install-AppPackage -Id 'LibreWolf.LibreWolf' -Name 'LibreWolf'
         Install-AppPackage -Id 'ONLYOFFICE.DesktopEditors' -Name 'ONLYOFFICE'
