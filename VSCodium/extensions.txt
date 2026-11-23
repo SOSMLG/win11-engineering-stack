@@ -1,4 +1,4 @@
-# VSCodium extensions (Open VSX) - installed by install-Win-Iot.ps1, or manually:
+# VSCodium extensions (Open VSX) - installed by Install.ps1 -Profile iot, or manually:
 #   codium --install-extension <id>
 # Lines starting with # are skipped by the installer.
 yasirarafat.opencode-ai-chat
