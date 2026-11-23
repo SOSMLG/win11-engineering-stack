@@ -3,7 +3,7 @@
 small project, simple rules. `AGENTS.md` has the full list of lessons. the short version:
 
 1. try it in a VM first. this changes system settings.
-2. run `.\Validate.ps1 -Profile daily` and `.\install-Win-Iot.ps1 -DryRun` before a real run. read the log before committing.
+2. run `.\Validate.ps1 -Profile daily` and `.\Install.ps1 -Profile iot -DryRun` before a real run. read the log before committing.
 3. new switches default off. every write gets a dry-run log line.
 4. check `$LASTEXITCODE` after native exes. try/catch alone lies.
 5. fresh-install-only deploys never overwrite a lived-in config.

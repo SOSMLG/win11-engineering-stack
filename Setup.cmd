@@ -1,6 +1,6 @@
 @echo off
-rem one click: elevates, runs the full setup (base apps), keeps the window open.
-rem extra flags pass straight through: Setup.cmd -SkipApps / -ConfigsOnly ...
+rem one click: elevates, runs the IoT profile through Install.ps1, keeps the window open.
+rem extra flags pass straight through: Setup.cmd -SkipApps / -ConfigsOnly / -Minimal ...
 cd /d "%~dp0"
 fltmc >nul 2>&1
 if "%errorlevel%"=="0" goto run
@@ -17,7 +17,7 @@ if "%~1"=="" (
 )
 exit /b
 :run
-powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0install-Win-Iot.ps1" -Unattended %*
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0Install.ps1" -Profile iot -Unattended %*
 echo.
 echo all done. log + report live in C:\Windows\Logs\Win-Iot-Setup
 pause

@@ -130,7 +130,7 @@ Rerun `.\scripts\Install.ps1 -Only engineering` after installing MATLAB. It sets
 ### LibreWolf profile creation fails
 
 Close every LibreWolf window, then rerun `.\Install.ps1 -Profile daily -Only
-developer`. On IoT, rerun `install-Win-Iot.ps1 -ConfigsOnly`. The profile name
+developer`. On IoT, rerun `.\Install.ps1 -Profile iot -ConfigsOnly`. The profile name
 must not already exist in `%APPDATA%\LibreWolf\profiles.ini`.
 
 ## Rollback

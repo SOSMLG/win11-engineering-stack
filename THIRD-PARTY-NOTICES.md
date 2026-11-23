@@ -19,7 +19,7 @@ engines per app, first hit wins: staged `-OfflineDir` files, winget, GitHub rele
 | opencode | `SST.opencode`. CI also installs `opencode-ai@1.19.4` from npm to validate configs | |
 | shell pack | Starship, zoxide, fzf, bat, eza, Fastfetch | |
 | Windows Terminal | `Microsoft.WindowsTerminal` | |
-| optional (`-IncludeOptional`) | Obsidian, Spotify, Mem Reduct (`Henry++.MemReduct`) | |
+| optional (default; `-Minimal` skips) | Obsidian, Spotify, Mem Reduct (`Henry++.MemReduct`) | |
 | runtimes | VC++ 2005 to 2022, .NET 8 Desktop Runtime | |
 | context7 MCP, Playwright MCP | `@upstash/context7-mcp@4.4.4`, `@playwright/mcp@0.0.83`, fetched by `npx` the first time OpenCode starts them | |
 

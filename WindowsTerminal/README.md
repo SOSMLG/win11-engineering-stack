@@ -1,6 +1,6 @@
 # Windows Terminal
 
-`install-Win-Iot.ps1` installs `Microsoft.WindowsTerminal` on builds that
+`Install.ps1 -Profile iot` installs `Microsoft.WindowsTerminal` on builds that
 support it and drops `settings.json` into
 `%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\`
 on a fresh install only. The daily theme module keeps the same scheme on an

@@ -73,7 +73,7 @@ rewrites settings on exit.
 
 ## Mem Reduct
 
-Optional IoT app, added only with `-IncludeOptional`. Winget ID is
+IoT app included by default; `-Minimal` skips it. Winget ID is
 `Henry++.MemReduct`. `memreduct.ini` is copied fresh-only to
 `%APPDATA%\Henry++\Mem Reduct\memreduct.ini`. The repo file is comment-only so
 Mem Reduct can write its own settings on first run. No autostart, no interval
