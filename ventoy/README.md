@@ -10,6 +10,6 @@ rufus path needs nothing. ventoy skips $OEM$, so it needs this folder.
 
 ## notes
 - the answer file expects this repo staged at `C:\Setup` and runs
-  `install-Win-Iot.ps1` from there on first logon.
+  `Install.ps1 -Profile iot` from there on first logon.
 - no net on first boot? stage installers beside the repo or tether the phone
   when the log asks.

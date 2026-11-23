@@ -15,7 +15,8 @@ to the profile script unchanged.
 
 `Install.ps1 -Verify` is an alias for the matching validator. Neither validation
 path writes settings, state, logs, transcripts, or reports. `Setup.cmd` always
-starts the IoT script with `-Unattended` before any extra flags you pass.
+starts the IoT profile through `Install.ps1` with `-Unattended` before any extra
+flags you pass.
 
 ## common flags
 

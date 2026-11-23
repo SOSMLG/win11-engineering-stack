@@ -34,7 +34,7 @@ needs it.
 .\Install.ps1 -Profile iot
 ```
 
-`Setup.cmd` still starts the old IoT path and passes extra flags through. For
+`Setup.cmd` starts the IoT profile through `Install.ps1` and passes extra flags through. For
 filters, resume, and the full flag list, read [CLI contract](docs/CLI.md).
 
 ## Verify
@@ -96,7 +96,7 @@ See the [app inventory](docs/APPS.md) for install IDs, config paths, and manual 
 - 7-Zip is in both app lists. The IoT self-check also accepts the Program Files install path.
 - qBittorrent ships with WebUI off, UPnP off, no stored web password, and loopback only if WebUI is enabled locally. Existing configs are kept.
 - LibreWolf is the IoT browser. It gets three isolated profiles, Start Menu shortcuts, and safe `defaultPref` overrides. Default browser is a manual Settings step.
-- Mem Reduct is optional via `-IncludeOptional`. No autostart, no scheduled cleanup, native light UI.
+- Mem Reduct ships in the default install; `-Minimal` skips it. No autostart, no scheduled cleanup, native light UI.
 - Windows Terminal keeps one Graphite Amber scheme and no stale PowerShell 7 profile.
 
 ## OmniRoute and OpenCode

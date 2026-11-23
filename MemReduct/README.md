@@ -1,6 +1,6 @@
 # Mem Reduct
 
-Optional app in the IoT profile. Added with `-IncludeOptional`. Winget ID:
+App in the IoT profile, included by default. `-Minimal` skips it. Winget ID:
 `Henry++.MemReduct`. The app needs admin rights for its Native API cleanup.
 
 ## Config

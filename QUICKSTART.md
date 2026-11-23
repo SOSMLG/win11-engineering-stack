@@ -22,8 +22,8 @@ transcript; iot also writes a report. read the output before the real run.
 ```
 
 `daily` is the modular engineering workstation. `iot` is the slim LTSC build.
-both use the same `config/` tree. `Setup.cmd` still starts the IoT path for the
-old one-click flow.
+both use the same `config/` tree. `Setup.cmd` starts the IoT profile through
+`Install.ps1` for the one-click flow.
 
 ## 3. verify without writing
 
@@ -55,10 +55,10 @@ reads the saved state file only.
 .\Install.ps1 -Profile iot -ConfigsOnly
 ```
 
-`install-Win-Iot.ps1 -?` lists the full IoT flag set. useful ones are
+`Install.ps1 -Profile iot -?` lists the full IoT flag set. useful ones are
 `-Unattended`, `-ConfigsOnly`, `-OfflineDir`, `-NoWingetBootstrap`,
-`-DriverDir`, `-Only`, `-SkipApps`, and `-IncludeOptional`. Mem Reduct is an
-optional IoT app.
+`-DriverDir`, `-Only`, `-SkipApps`, and `-Minimal`. Optional apps (Obsidian,
+Spotify, Mem Reduct) are included unless `-Minimal` is set.
 
 ## where to go next
 

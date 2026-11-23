@@ -12,7 +12,7 @@
   powershell -ExecutionPolicy Bypass -File install-Win-Iot.ps1
   powershell -ExecutionPolicy Bypass -File install-Win-Iot.ps1 -Unattended -OfflineDir D:\Offline
   powershell -ExecutionPolicy Bypass -File install-Win-Iot.ps1 -Unattended -DriverDir D:\Drivers -Reboot
-  powershell -ExecutionPolicy Bypass -File install-Win-Iot.ps1 -IncludeOptional -Unattended
+  powershell -ExecutionPolicy Bypass -File install-Win-Iot.ps1 -Minimal -Unattended
   powershell -ExecutionPolicy Bypass -File install-Win-Iot.ps1 -ConfigsOnly
   (configs-only: re-copy user configs to their real locations, nothing else.)
 #>
@@ -25,7 +25,7 @@ param(
   [string]$BuildConfig = '',
   [string]$Arch = '',
   [switch]$DetectHardware,
-  [switch]$IncludeOptional,
+  [switch]$Minimal,
   [switch]$Unattended,
   [switch]$NoWingetBootstrap,
   [string]$OfflineDir = '',
@@ -681,7 +681,8 @@ $shellApps = @(
 )
 $coreApps += $shellApps
 $optionalApps = @('Obsidian.Obsidian','Spotify.Spotify','Henry++.MemReduct')
-if ($IncludeOptional) { $coreApps += $optionalApps }
+# Optional apps are part of the default install; -Minimal leaves them out.
+if (-not $Minimal) { $coreApps += $optionalApps }
 # terminal wants win10 1903+. on ltsc 2019 it would just fail every run.
 $wtBuild = 0
 $wtOk = (-not $osInfo) -or (-not [int]::TryParse([string]$osInfo.Build, [ref]$wtBuild)) -or ($wtBuild -ge 18362)
