@@ -5,7 +5,7 @@
 One Windows setup repo with two profiles:
 
 - `daily`: `scripts/Install.ps1`, modular, engineering workstation.
-- `iot`: `install-Win-Iot.ps1`, slim Win10/Win11 IoT LTSC build.
+- `iot`: `scripts/modules/iot/`, slim Win10/Win11 IoT LTSC build.
 
 `Install.ps1` and `Validate.ps1` are the front doors. `config/` is the only
 config tree. Docs live in `docs/`. Ventoy answer files live in `ventoy/script/`.

@@ -40,6 +40,7 @@
 #>
 [CmdletBinding()]
 param(
+    [ValidateSet('daily', 'iot')][string]$Profile = 'daily',
     [switch]$Status,
     [switch]$DryRun,
     [string[]]$Only = @(),
@@ -49,7 +50,24 @@ param(
     [string]$GitName,
     [string]$GitEmail,
     [string]$TiaInstaller,
-    [string]$MatlabInstaller
+    [string]$MatlabInstaller,
+    [string]$StateDir = 'C:\Windows\Logs\Win-Iot-Setup\state',
+    [string]$BuildConfig = '',
+    [string]$Arch = '',
+    [switch]$DetectHardware,
+    [switch]$Minimal,
+    [switch]$Unattended,
+    [switch]$NoWingetBootstrap,
+    [string]$OfflineDir = '',
+    [string]$LogDir = 'C:\Windows\Logs\Win-Iot-Setup',
+    [string]$DriverDir = '',
+    [switch]$ConfigsOnly,
+    [switch]$Reboot,
+    [switch]$Fixes,
+    [switch]$Verify,
+    [switch]$SkipHashVerify,
+    [switch]$Idempotent,
+    [string[]]$SkipApps = @()
 )
 
 Set-StrictMode -Version Latest
@@ -57,6 +75,12 @@ $ErrorActionPreference = 'Stop'
 
 $libPath = Join-Path $PSScriptRoot 'lib\Common.ps1'
 . $libPath
+
+if ($Profile -eq 'iot') {
+    # IoT profile: run the modular IoT implementation from scripts/modules/iot.
+    . (Join-Path $PSScriptRoot 'modules\iot\IotMain.ps1')
+    exit 0
+}
 
 if ($Status) {
     $statusState = Get-StackState
