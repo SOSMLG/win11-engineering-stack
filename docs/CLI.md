@@ -6,12 +6,12 @@ to the profile script unchanged.
 | command | profile | target |
 | --- | --- | --- |
 | `Install.ps1 -Profile daily` | daily | `scripts/Install.ps1` |
-| `Install.ps1 -Profile iot` | iot | `install-Win-Iot.ps1` |
+| `Install.ps1 -Profile iot` | iot | `scripts/Install.ps1 -Profile iot` |
 | `Install.ps1 -Profile daily -Verify` | daily | `Validate.ps1 -Profile daily` |
 | `Install.ps1 -Profile iot -Verify` | iot | `Validate.ps1 -Profile iot` |
 | `Install.ps1 -Profile daily -Status` | daily | saved daily state only |
 | `Validate.ps1` | daily | `scripts/Validate.ps1` |
-| `Validate.ps1 -Profile iot` | iot | `install-Win-Iot.ps1 -Verify` |
+| `Validate.ps1 -Profile iot` | iot | `scripts/Install.ps1 -Profile iot -Verify` |
 
 `Install.ps1 -Verify` is an alias for the matching validator. Neither validation
 path writes settings, state, logs, transcripts, or reports. `Setup.cmd` always

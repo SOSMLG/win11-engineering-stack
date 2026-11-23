@@ -44,18 +44,13 @@ if ($Status -and $Profile -ne 'daily') {
     throw '-Status is only available for the daily profile.'
 }
 
-if ($Profile -eq 'iot') {
-    $entry = Join-Path $root 'install-Win-Iot.ps1'
-}
-else {
-    $entry = Join-Path $root 'scripts\Install.ps1'
-}
+$entry = Join-Path $root 'scripts\Install.ps1'
 
 if (-not (Test-Path -LiteralPath $entry)) {
     throw "Missing profile entry point: $entry"
 }
 
-$arguments = @()
+$arguments = @('-Profile', $Profile)
 if ($DryRun) { $arguments += '-DryRun' }
 if ($Force) { $arguments += '-Force' }
 if ($Only.Count -gt 0) { $arguments += @('-Only', ($Only -join ',')) }

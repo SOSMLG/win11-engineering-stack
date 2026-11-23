@@ -1,49 +1,8 @@
-<#
-.SYNOPSIS
-  My Win10/Win11 IoT (Enterprise) LTSC setup. Unattended, rerunnable.
-.DESCRIPTION
-  Built for a tiny10 box with no store and usually no network
-  on first boot. PS 5.1, stock Windows desktop, LibreWolf, VSCodium.
-  No extra shell, no extra window manager. Stock colors everywhere.
-  Engines per app, first hit wins: staged -OfflineDir files, winget,
-  github releases, direct vendor URLs. Log lands in C:\Windows\Logs\Win-Iot-Setup
-  either way.
-.EXAMPLE
-  powershell -ExecutionPolicy Bypass -File install-Win-Iot.ps1
-  powershell -ExecutionPolicy Bypass -File install-Win-Iot.ps1 -Unattended -OfflineDir D:\Offline
-  powershell -ExecutionPolicy Bypass -File install-Win-Iot.ps1 -Unattended -DriverDir D:\Drivers -Reboot
-  powershell -ExecutionPolicy Bypass -File install-Win-Iot.ps1 -Minimal -Unattended
-  powershell -ExecutionPolicy Bypass -File install-Win-Iot.ps1 -ConfigsOnly
-  (configs-only: re-copy user configs to their real locations, nothing else.)
-#>
-[CmdletBinding()]
-param(
-  [switch]$SkipHashVerify,
-  [switch]$Idempotent,
-  [switch]$Force,
-  [string]$StateDir = 'C:\Windows\Logs\Win-Iot-Setup\state',
-  [string]$BuildConfig = '',
-  [string]$Arch = '',
-  [switch]$DetectHardware,
-  [switch]$Minimal,
-  [switch]$Unattended,
-  [switch]$NoWingetBootstrap,
-  [string]$OfflineDir = '',
-  [string]$LogDir = 'C:\Windows\Logs\Win-Iot-Setup',
-  [string]$DriverDir = '',
-  [switch]$ConfigsOnly,
-  [switch]$Reboot,
-  [switch]$Fixes,
-  [switch]$DryRun,
-  [switch]$Verify,
-  [string[]]$Only = @(),
-  [string[]]$SkipApps = @()
-)
 $ErrorActionPreference = 'Continue'
 Set-StrictMode -Version 2
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-$Repo = Split-Path $MyInvocation.MyCommand.Path -Parent
+$Repo = $script:RepoRoot
 # -ConfigsOnly re-deploys user configs (VSCodium, Vesktop, qBittorrent, opencode,
 # terminal, ...) and nothing else. install phases are gated below.
 # log, state, and transcript start after -Verify, so the read-only path writes nothing.
