@@ -15,7 +15,7 @@
 
 .PARAMETER Only
     Run selected modules: all, preflight, os, packages, apps, engineering,
-    developer, omniroute, theme, configs, validate.
+    developer, omniroute, theme, configs, debloat, validate.
 
 .PARAMETER Resume
     Continue after the reboot requested by the OS module.
@@ -81,6 +81,13 @@ $libPath = Join-Path $PSScriptRoot 'lib\Common.ps1'
 if ($Profile -eq 'iot') {
     # IoT profile: run the modular IoT implementation from scripts/modules/iot.
     . (Join-Path $PSScriptRoot 'modules\iot\IotMain.ps1')
+    # packages sets $failed in this scope. skips never enter it, so only real
+    # install failures turn a successful-looking run into a non-zero exit.
+    $iotFailed = @()
+    if (Get-Variable -Name failed -Scope Script -ErrorAction SilentlyContinue) {
+        $iotFailed = @($script:failed)
+    }
+    if ($iotFailed.Count -gt 0) { exit 1 }
     exit 0
 }
 

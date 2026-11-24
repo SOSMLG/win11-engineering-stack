@@ -61,6 +61,7 @@ sets the exit code and stops the run from claiming the module completed.
 
 - `0` means the checked path completed without a hard failure.
 - `1` means at least one real check failed.
+- IoT app installs that actually failed set `1`; skip-only misses do not.
 - a nonzero child exit code is propagated by both front doors.
 - the UAC relaunch waits for the elevated child and returns its exit code.
 

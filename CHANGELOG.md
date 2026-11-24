@@ -32,12 +32,14 @@ format follows keep a changelog. versions are git tags like `v0.1.0`.
 - removed every Windows optimization on request. gone: the old tiered tweak/debloat phases, `-TweaksOnly`, the tweak matrix, O&O config, Lenovo charge cap, DNS/power/taskbar/privacy tuning, temp cleanup, the daily privacy, power, PLC and Defender-exclusion code, and the unused root `lib/` helpers. these are manual now. the new single debloat pass is a separate, fixed set.
 - removed the third-party package-manager bootstrap and fallback engine from the IoT installer. package sources are now staged files, winget, GitHub releases, and direct vendor URLs.
 - dropped the study pack: Zotero, SumatraPDF, MiKTeX, Typst and their configs. Windows Terminal moved into the base app list.
-- dropped Komorebi and whkd, including keybinds, WM config, autostart shortcuts and smoke checks. the desktop is stock Windows now.
+- dropped Komorebi and whkd, including keybinds, WM config, autostart shortcuts and smoke checks. no tiling WM remains; the shell is stock Windows plus one fixed debloat pass.
 - dropped the ISO builder, autounattend templates and `templates/`. offline installs still work through `-OfflineDir`.
 - deleted the `tests/` suite on request. `-DryRun` is the remaining preflight check.
 
 ### fixed
-- IoT `-Verify` now runs before log, state, transcript, and report setup, so the read-only path writes nothing.
+- IoT runs now exit 1 when an app install actually failed, so `Setup.cmd` pauses instead of claiming success. Skip-only misses on stripped images still exit 0.
+- staged Spotube now uses the NSIS `/S` switch, and its GitHub fallback uses the canonical `team-spotube/spotube` repo.
+- Joplin seed config now uses valid setting keys and keeps a light theme with `themeAutoDetect` off.
 - `Install.ps1 -Verify` is an alias for the matching validator, `Install.ps1 -Status` reports saved daily state, and `Validate.ps1` defaults to `daily`.
 - the UAC relaunch waits for the elevated child and returns its exit code. daily modules can mark failure, and the run summary prints ok, skip, warn, and fail counts with the next command.
 - the IoT 7-Zip smoke test accepts `C:\Program Files\7-Zip\7z.exe` when `7z` is not on `PATH`.

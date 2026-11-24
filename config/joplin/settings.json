@@ -1,7 +1,8 @@
 {
   "theme": 1,
+  "themeAutoDetect": false,
   "sync.target": 0,
   "editor.codeView": true,
-  "editor.spellcheck.enabled": true,
+  "editor.spellcheckBeta": true,
   "markdown.plugin.softbreaks": false
 }

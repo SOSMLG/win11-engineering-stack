@@ -21,7 +21,7 @@ function Set-DebloatDefaultRegistryValue {
     if ($exists) {
         try { $current = (Get-Item -LiteralPath $Path).GetValue('') } catch { $current = $null }
     }
-    if ($exists -and "$current" -eq "$Value") {
+    if ($exists -and $null -ne $current -and "$current" -eq "$Value") {
         Write-Skip "default value already set: $Path"
         return
     }

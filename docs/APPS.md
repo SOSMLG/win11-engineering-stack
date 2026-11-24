@@ -79,8 +79,8 @@ Joplin is the FOSS notes replacement for Obsidian. The installer seeds
 `config/joplin/settings.json` to `%USERPROFILE%\.config\joplin-desktop\settings.json`
 on a fresh profile. It sets the light theme, code view, spellcheck, and
 `sync.target: 0` so the first run stays local. Existing settings are kept on
-re-run; `-Force` replaces them after a backup. Sync is a one-time Joplin setting
-if you want it.
+re-run. Daily `-Force` replaces them after a backup; IoT `-Force` overwrites
+without one. Sync is a one-time Joplin setting if you want it.
 
 ## Spotube
 

@@ -148,7 +148,7 @@ $gitMap = @{
   'VSCodium.VSCodium'      = @{ repo='VSCodium/vscodium'; pattern='VSCodiumSetup-x64-*.exe' }
   'SST.opencode'           = @{ repo='sst/opencode'; pattern='opencode-windows-x64.zip' }
   'Joplin.Joplin'          = @{ repo='laurent22/joplin'; pattern='Joplin-Setup-*.exe' }
-  'KRTirtho.Spotube'       = @{ repo='KRTirtho/spotube'; pattern='Spotube-windows-x86_64-setup.exe' }
+  'KRTirtho.Spotube'       = @{ repo='team-spotube/spotube'; pattern='Spotube-windows-x86_64-setup.exe' }
 }
 function Install-GitHubAsset($id) {
   $g = $gitMap[$id]
@@ -396,9 +396,10 @@ function Install-OfflineFile($file) {
         $proc = Start-Process $exe -ArgumentList '/q' -Wait -PassThru -EA Stop
       } elseif ($file.Name -like '*python*') {
         $proc = Start-Process $exe -ArgumentList '/quiet', 'InstallAllUsers=0', 'PrependPath=1' -Wait -PassThru -EA Stop
-      } elseif ($file.Name -like '*VSCodium*' -or $file.Name -like '*Git*' -or $file.Name -like '*Telegram*' -or $file.Name -like '*tsetup*' -or $file.Name -like '*td-setup*' -or $file.Name -like '*Spotube*') {
+      } elseif ($file.Name -like '*VSCodium*' -or $file.Name -like '*Git*' -or $file.Name -like '*Telegram*' -or $file.Name -like '*tsetup*' -or $file.Name -like '*td-setup*') {
         $proc = Start-Process $exe -ArgumentList '/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART' -Wait -PassThru -EA Stop
       } else {
+        # NSIS installers (Joplin, Spotube, 7-Zip) use /S.
         $proc = Start-Process $exe -ArgumentList '/S' -Wait -PassThru -EA Stop
       }
       if ($proc.ExitCode -notin @(0,1641,3010)) { throw "installer exit=$($proc.ExitCode) ($($file.Name))" }

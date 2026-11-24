@@ -40,7 +40,7 @@ if ($DryRun) { Log 'Dry-run finished. system state was not changed; logs and the
 elseif ($ConfigsOnly) { Log 'Configs-only done.' }
 else {
 Log 'NEXT:'
-Log '  1. reboot, stock desktop as-is.'
+Log '  1. reboot, slim post-install desktop as-is.'
 Log '  2. double-click Desktop Win-Iot-Finish.cmd (opencode auth + optional password).'
 Log '  3. MATLAB via campus license + USB-serial drivers (CH340/CP210x/ST-Link) manually.'
 Log '  4. set LibreWolf as default browser in Settings > Apps > Default apps.'
