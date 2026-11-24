@@ -1,9 +1,9 @@
 # security
 
 ## what this repo does
-the installer changes system settings and installs software. it does not apply
-tweaks, debloat Windows, or change Defender preferences. run `-DryRun` and try a
-VM first.
+the installer changes system settings and installs software. it applies one
+fixed default debloat set, but no tiered tweaks and no Defender preference
+changes. run `-DryRun` and try a VM first.
 
 ## what to know before running it
 - `Setup.cmd` self-elevates. the installer is normally run with `-ExecutionPolicy Bypass`. without

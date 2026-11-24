@@ -1,6 +1,6 @@
 @echo off
-rem one click: elevates, runs the IoT profile through Install.ps1, keeps the window open.
-rem extra flags pass straight through: Setup.cmd -SkipApps / -ConfigsOnly / -Minimal ...
+rem one click: elevates, runs the IoT post-install profile, exits clean on success.
+rem extra flags pass straight through: Setup.cmd -SkipApps / -ConfigsOnly / -Minimal / -NoDebloat ...
 cd /d "%~dp0"
 fltmc >nul 2>&1
 if "%errorlevel%"=="0" goto run
@@ -18,6 +18,13 @@ if "%~1"=="" (
 exit /b
 :run
 powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0Install.ps1" -Profile iot -Unattended %*
+if errorlevel 1 (
+  echo.
+  echo setup failed. log + report live in C:\Windows\Logs\Win-Iot-Setup
+  echo fix the error above, then re-run.
+  pause
+  exit /b 1
+)
 echo.
 echo all done. log + report live in C:\Windows\Logs\Win-Iot-Setup
-pause
+exit /b 0

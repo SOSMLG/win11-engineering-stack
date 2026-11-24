@@ -21,6 +21,7 @@ param(
     [ValidateSet('daily', 'iot')][string]$Profile = 'daily',
     [switch]$DryRun,
     [switch]$Force,
+    [switch]$NoDebloat,
     [string[]]$Only = @(),
     [switch]$Resume,
     [switch]$Verify,
@@ -53,6 +54,7 @@ if (-not (Test-Path -LiteralPath $entry)) {
 $arguments = @('-Profile', $Profile)
 if ($DryRun) { $arguments += '-DryRun' }
 if ($Force) { $arguments += '-Force' }
+if ($NoDebloat) { $arguments += '-NoDebloat' }
 if ($Only.Count -gt 0) { $arguments += @('-Only', ($Only -join ',')) }
 if ($Resume) { $arguments += '-Resume' }
 if ($Status) { $arguments += '-Status' }

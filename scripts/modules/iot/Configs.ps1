@@ -115,6 +115,8 @@ if (Test-Path $ocSkillSrc) {
 }
 # terminal config, fresh-only. only where terminal can actually land (same build gate as the install).
 if ($wtOk) { Copy-Fresh (Join-Path $Repo 'WindowsTerminal\settings.json') (Join-Path $env:LOCALAPPDATA 'Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json') }
+# joplin: light theme and local-only profile on first run. keep edits on re-run.
+Copy-Fresh (Join-Path $Repo 'config\joplin\settings.json') (Join-Path $env:USERPROFILE '.config\joplin-desktop\settings.json')
 $ocPlugins = Join-Path $env:USERPROFILE '.config\opencode\plugins'
 if (-not $DryRun -and -not (Test-Path $ocPlugins)) { New-Item -ItemType Directory -Force -Path $ocPlugins | Out-Null }
 # librewolf: safe defaults plus three isolated profiles. fresh-only overrides.

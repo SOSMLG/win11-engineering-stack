@@ -11,7 +11,7 @@ installs two Windows setups with native PowerShell 5.1. the daily profile builds
 | **profiles** | `daily` installs development tools, Git and gh config, MATLAB paths, OmniRoute, VSCodium, Windows Terminal and per-app configs. `iot` installs a smaller LTSC app set from staged files, winget or vendor URLs. |
 | **dry run** | `-DryRun` prints the writes and installs it would perform. it does not change settings, install apps or overwrite configs. logs and the IoT report are still written. |
 | **configs** | one `config/` tree serves both profiles. IoT keeps `defaults.json` and an empty `hashes.json`, so downloads are not hash-pinned today. |
-| **guardrails** | Defender preferences are not written. `OMNIROUTE_API_KEY` is read from the environment only. there is no tweak pass, debloat pass or third-party package manager bootstrap. |
+| **guardrails** | Defender preferences are not written. `OMNIROUTE_API_KEY` is read from the environment only. one default debloat pass runs unless `-NoDebloat` is set; there are no safe/standard/aggressive tiers and no third-party package manager bootstrap. |
 
 ## Preview
 
@@ -34,8 +34,10 @@ needs it.
 .\Install.ps1 -Profile iot
 ```
 
-`Setup.cmd` starts the IoT profile through `Install.ps1` and passes extra flags through. For
-filters, resume, and the full flag list, read [CLI contract](docs/CLI.md).
+`Setup.cmd` starts the IoT profile through `Install.ps1` and passes extra flags through. It is the
+post-install path for tiny11, AspectOS, and Windows 11 IoT Enterprise LTSC images. Missing winget,
+AppX, Store, or scheduled-task cmdlets are skips, not hard failures. For filters, resume, and the
+full flag list, read [CLI contract](docs/CLI.md).
 
 ## Verify
 
@@ -56,7 +58,7 @@ modules, pending reboot, and the next command.
 The daily profile runs steps in this order:
 
 ```text
-preflight os packages apps engineering developer omniroute theme configs validate
+preflight os packages apps engineering developer omniroute theme configs debloat validate
 ```
 
 Run one step with `-Only`:
@@ -76,10 +78,13 @@ use module names. See [CLI contract](docs/CLI.md).
   logs under `C:\Windows\Logs\Win-Iot-Setup`, with a `%TEMP%` fallback.
 - Daily logs go to `%LOCALAPPDATA%\win11-stack\logs`. IoT logs go to
   `C:\Windows\Logs\Win-Iot-Setup`.
-- If winget is missing, the installer skips app installs and prints the IDs to
-  install by hand.
+- If winget is missing on daily, app installs are skipped with the IDs to
+  install by hand. On IoT, apps with a GitHub or direct source still install.
 - IoT package sources are staged files, then winget, then GitHub releases or
   direct vendor URLs.
+- The default debloat pass removes the consumer app set and applies UI/privacy
+  values. It never touches Windows Update, Defender, Store, Terminal, WebView2,
+  or .NET. Use `-NoDebloat` only for recovery or a deliberate stock image.
 - A reboot is required after OS feature changes. Re-run with `-Resume`.
 
 ## Theme
@@ -96,6 +101,8 @@ See the [app inventory](docs/APPS.md) for install IDs, config paths, and manual 
 - 7-Zip is in both app lists. The IoT self-check also accepts the Program Files install path.
 - qBittorrent ships with WebUI off, UPnP off, no stored web password, and loopback only if WebUI is enabled locally. Existing configs are kept.
 - LibreWolf is the IoT browser. It gets three isolated profiles, Start Menu shortcuts, and safe `defaultPref` overrides. Default browser is a manual Settings step.
+- Joplin replaces Obsidian and gets a light, local-only seed config. Spotube replaces Spotify; its one-time first-run setup is left to the app.
+- Outlook for Windows is removed and blocked from reinstalling by the default debloat pass. Classic Outlook from a paid Office install is not touched.
 - Mem Reduct ships in the default install; `-Minimal` skips it. No autostart, no scheduled cleanup, native light UI.
 - Windows Terminal keeps one Graphite Amber scheme and no stale PowerShell 7 profile.
 

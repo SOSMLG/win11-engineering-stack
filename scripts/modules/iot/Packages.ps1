@@ -147,6 +147,8 @@ $gitMap = @{
   'Git.Git'                = @{ repo='git-for-windows/git'; pattern='Git-*-64-bit.exe' }
   'VSCodium.VSCodium'      = @{ repo='VSCodium/vscodium'; pattern='VSCodiumSetup-x64-*.exe' }
   'SST.opencode'           = @{ repo='sst/opencode'; pattern='opencode-windows-x64.zip' }
+  'Joplin.Joplin'          = @{ repo='laurent22/joplin'; pattern='Joplin-Setup-*.exe' }
+  'KRTirtho.Spotube'       = @{ repo='KRTirtho/spotube'; pattern='Spotube-windows-x86_64-setup.exe' }
 }
 function Install-GitHubAsset($id) {
   $g = $gitMap[$id]
@@ -279,7 +281,7 @@ $shellApps = @(
   'Fastfetch-cli.Fastfetch'
 )
 $coreApps += $shellApps
-$optionalApps = @('Obsidian.Obsidian','Spotify.Spotify','Henry++.MemReduct')
+$optionalApps = @('Joplin.Joplin','KRTirtho.Spotube','Henry++.MemReduct')
 # Optional apps are part of the default install; -Minimal leaves them out.
 if (-not $Minimal) { $coreApps += $optionalApps }
 # terminal wants win10 1903+. on ltsc 2019 it would just fail every run.
@@ -311,6 +313,8 @@ $failed = @()
 $installed = @()
 # apps we actually tried an engine on this run. skip-only failures don't need a retry pass.
 $script:appAttempted = @{}
+# apps with no usable engine on this image are skips, not failures.
+$script:appSkipped = @{}
 # per-app state so -Idempotent re-runs skip what already landed and retry
 # only what failed. one small json next to phases.json.
 function Get-AppState {
@@ -392,7 +396,7 @@ function Install-OfflineFile($file) {
         $proc = Start-Process $exe -ArgumentList '/q' -Wait -PassThru -EA Stop
       } elseif ($file.Name -like '*python*') {
         $proc = Start-Process $exe -ArgumentList '/quiet', 'InstallAllUsers=0', 'PrependPath=1' -Wait -PassThru -EA Stop
-      } elseif ($file.Name -like '*VSCodium*' -or $file.Name -like '*Git*' -or $file.Name -like '*Telegram*' -or $file.Name -like '*tsetup*' -or $file.Name -like '*td-setup*') {
+      } elseif ($file.Name -like '*VSCodium*' -or $file.Name -like '*Git*' -or $file.Name -like '*Telegram*' -or $file.Name -like '*tsetup*' -or $file.Name -like '*td-setup*' -or $file.Name -like '*Spotube*') {
         $proc = Start-Process $exe -ArgumentList '/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART' -Wait -PassThru -EA Stop
       } else {
         $proc = Start-Process $exe -ArgumentList '/S' -Wait -PassThru -EA Stop
@@ -432,8 +436,10 @@ function Install-App($id) {
   }
   if ($off) {
     Log "  SKIP $id (staged but no -Unattended. re-run with -Unattended or run $($off.Name) by hand)"
+    $script:appSkipped[$id] = $true
   } elseif (-not $gitMap.ContainsKey($id) -and -not $directMap.ContainsKey($id)) {
     Log "  SKIP $id (no github/direct fallback. stage it in -OfflineDir or retry with winget)"
+    $script:appSkipped[$id] = $true
   }
   return $false
 }
@@ -447,7 +453,7 @@ if ((-not $ConfigsOnly) -and (Should-Run 'apps') -and ($DryRun -or $online -or (
     if ($Idempotent -and (Test-AppDone $id)) { Log "  skip (done): $id"; continue }
     Write-Progress -Activity 'installing apps' -Status "$appIdx/$appTotal $id" -PercentComplete ([int]((($appIdx - 1) * 100) / [math]::Max(1, $appTotal))) -EA SilentlyContinue
     if (Install-App $id) { $installed += $id; Set-AppDone $id }
-    else { $failed += $id }
+    elseif (-not $script:appSkipped.ContainsKey($id)) { $failed += $id }
   }
   Write-Progress -Activity 'installing apps' -Completed -EA SilentlyContinue
   # one free retry pass. flaky links and rate limits are the usual causes.
@@ -496,7 +502,5 @@ if ($DriverDir -and (Test-Path $DriverDir) -and (-not $ConfigsOnly)) {
     else { Log "  WARN pnputil exit=$exit (check the inf folder, install manually)" }
   } else { Log '  WARN drivers: skipped (not admin).' }
 } elseif ($DriverDir) { Log '  WARN drivers: folder missing or configs-only run.' }
-
-Log 'NOTE manual-only: ExplorerBlurMica (Maplespe releases, optional), Spicetify (after Spotify: Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/spicetify/cli/main/install.ps1 | Invoke-Expression).'
 
 # Helpers.ps1 is dot-sourced separately by the installer.

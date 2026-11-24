@@ -202,6 +202,8 @@ function Get-ImageGuardrails {
         WinSxS         = Test-Path (Join-Path $env:WINDIR 'WinSxS')
         Winget         = $winget
         ComponentStore = Test-Path (Join-Path $env:WINDIR 'WinSxS\Backup')
+        Appx           = $null -ne (Get-Command Get-AppxPackage -ErrorAction SilentlyContinue)
+        ScheduledTasks = $null -ne (Get-Command Get-ScheduledTask -ErrorAction SilentlyContinue)
     }
 }
 

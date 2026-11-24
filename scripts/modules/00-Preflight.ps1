@@ -44,6 +44,20 @@ function Invoke-Preflight {
         Write-Ok 'winget present.'
     }
 
+    if ($guardrails.Appx) {
+        Write-Ok 'AppX cmdlets present.'
+    }
+    else {
+        Write-Skip 'AppX cmdlets are missing; debloat app removal will skip.'
+    }
+
+    if ($guardrails.ScheduledTasks) {
+        Write-Ok 'Scheduled-task cmdlets present.'
+    }
+    else {
+        Write-Skip 'Scheduled-task cmdlets are missing; task cleanup will skip.'
+    }
+
     if ($missing.Count -gt 0) {
         Write-Warn "This image is missing: $($missing -join ', ')."
         Write-Warn 'Rebuild with WinUtil/MicroWin keeping Defender, WinSxS, Windows Update, and App Installer.'

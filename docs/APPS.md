@@ -12,6 +12,8 @@ files.
 | VSCodium | daily, iot | `VSCodium.VSCodium` | `config/vscodium/settings.json`, `VSCodium/graphite-amber-theme/` | Graphite Amber |
 | LibreWolf | daily, iot | `LibreWolf.LibreWolf` | `LibreWolf/librewolf.overrides.cfg` | native light |
 | Vesktop | daily, iot | `Vencord.Vesktop` | `config/vesktop/settings.json`, `Vesktop/quickcss.css` | Graphite Amber |
+| Joplin | daily, iot, optional | `Joplin.Joplin` | `config/joplin/settings.json` | native light |
+| Spotube | iot, optional | `KRTirtho.Spotube` | app-managed | native light |
 | Mem Reduct | iot, optional | `Henry++.MemReduct` | `MemReduct/memreduct.ini` | native light |
 
 ## 7-Zip
@@ -70,6 +72,28 @@ Vesktop and Vencord settings are merged into
 `%APPDATA%\vesktop\settings\settings.json`. `Vesktop/quickcss.css` supplies the
 Graphite Amber Quick CSS. Close Vesktop before changing these files; it
 rewrites settings on exit.
+
+## Joplin
+
+Joplin is the FOSS notes replacement for Obsidian. The installer seeds
+`config/joplin/settings.json` to `%USERPROFILE%\.config\joplin-desktop\settings.json`
+on a fresh profile. It sets the light theme, code view, spellcheck, and
+`sync.target: 0` so the first run stays local. Existing settings are kept on
+re-run; `-Force` replaces them after a backup. Sync is a one-time Joplin setting
+if you want it.
+
+## Spotube
+
+Spotube is the FOSS Spotify client. It is installed by winget, or from the
+GitHub release when winget is missing. Its settings live in Flutter
+`shared_preferences.json` and are not stable across releases, so the installer
+does not ship a fake config. The first-run wizard is a one-time step.
+
+## Outlook
+
+The default debloat pass removes `Microsoft.OutlookForWindows` and the
+provisioned package, then turns off the consumer-app reinstall switches. Classic
+Outlook from a paid Office install is not touched.
 
 ## Mem Reduct
 

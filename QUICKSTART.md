@@ -21,9 +21,10 @@ transcript; iot also writes a report. read the output before the real run.
 .\Install.ps1 -Profile iot
 ```
 
-`daily` is the modular engineering workstation. `iot` is the slim LTSC build.
-both use the same `config/` tree. `Setup.cmd` starts the IoT profile through
-`Install.ps1` for the one-click flow.
+`daily` is the modular engineering workstation. `iot` is the slim post-install
+build for tiny11, AspectOS, and Windows 11 IoT Enterprise LTSC. both use the
+same `config/` tree. `Setup.cmd` starts the IoT profile through `Install.ps1`
+for the one-click flow and exits clean when it succeeds.
 
 ## 3. verify without writing
 
@@ -57,8 +58,10 @@ reads the saved state file only.
 
 `Install.ps1 -Profile iot -?` lists the full IoT flag set. useful ones are
 `-Unattended`, `-ConfigsOnly`, `-OfflineDir`, `-NoWingetBootstrap`,
-`-DriverDir`, `-Only`, `-SkipApps`, and `-Minimal`. Optional apps (Obsidian,
-Spotify, Mem Reduct) are included unless `-Minimal` is set.
+`-DriverDir`, `-Only`, `-SkipApps`, `-Minimal`, and `-NoDebloat`. Optional apps
+(Joplin, Spotube, Mem Reduct) are included unless `-Minimal` is set. The single
+default debloat pass runs on every normal install; `-NoDebloat` is the recovery
+switch.
 
 ## where to go next
 

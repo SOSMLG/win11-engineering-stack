@@ -1,0 +1,7 @@
+{
+  "theme": 1,
+  "sync.target": 0,
+  "editor.codeView": true,
+  "editor.spellcheck.enabled": true,
+  "markdown.plugin.softbreaks": false
+}

@@ -24,6 +24,25 @@ function Set-VSCodiumConfig {
     else { Write-Ok "VSCodium settings merged: $target" }
 }
 
+function Set-JoplinConfig {
+    $source = Join-Path $script:ConfigRoot 'joplin\settings.json'
+    if (-not (Test-Path $source)) {
+        Write-Skip "Joplin settings template missing: $source"
+        return
+    }
+
+    $target = Join-Path $env:USERPROFILE '.config\joplin-desktop\settings.json'
+    if ((Test-Path $target) -and -not $script:Force) {
+        Write-Skip "Joplin settings kept: $target"
+        return
+    }
+
+    $settings = ConvertTo-DeepHashtable (Get-Content $source -Raw | ConvertFrom-Json)
+    Write-JsonFile -Path $target -Value $settings -NoMerge
+    if ($script:DryRun) { Write-Detail "[dry-run] Joplin settings would be written: $target" }
+    else { Write-Ok "Joplin settings written: $target" }
+}
+
 function Set-LibreWolfConfig {
     $source = Join-Path $script:RepoRoot 'LibreWolf\librewolf.overrides.cfg'
     if (-not (Test-Path $source)) {
@@ -117,12 +136,13 @@ function Set-VesktopConfig {
 }
 
 function Invoke-Configs {
-    Write-Step 'Configs: editor, OpenCode, Vesktop, LibreWolf'
+    Write-Step 'Configs: editor, OpenCode, Vesktop, LibreWolf, Joplin'
 
     Set-VSCodiumConfig
     Set-OpenCodeConfig
     Set-VesktopConfig
     Set-LibreWolfConfig
+    Set-JoplinConfig
 
     Write-Detail 'Config backups:'
     if ($script:BackupSession) {

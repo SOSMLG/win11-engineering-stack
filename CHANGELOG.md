@@ -4,6 +4,8 @@ format follows keep a changelog. versions are git tags like `v0.1.0`.
 
 ## [Unreleased]
 ### added
+- one default debloat pass for both profiles, driven by `config/debloat.json`. it applies UI, privacy, and provider values, removes the consumer app set including Outlook for Windows, blocks consumer-app reinstall, and disables only CEIP/Appraiser/reporting tasks. `-NoDebloat` is a recovery switch, not a tier.
+- Joplin as the FOSS notes app and Spotube as the FOSS Spotify client. Joplin gets a local-only light seed config; Spotube keeps its first-run wizard.
 - repository health files and read-only CI validation.
 - `docs/APPS.md` with install IDs, config paths, theme scope, and manual steps for the desktop apps.
 - configured LibreWolf and Mem Reduct folders. LibreWolf gets safe `defaultPref` overrides and three profiles; Mem Reduct gets a comment-only portable config.
@@ -19,13 +21,15 @@ format follows keep a changelog. versions are git tags like `v0.1.0`.
 - merged the modular daily installer, the daily config set and their docs into this repo. `Install.ps1` and `Validate.ps1` are the front doors for both profiles.
 - OpenCode now uses one V2 config with `providers` and `permissions`. the old deployed V1 config is gone; the root `opencode.json` is repo-only.
 - the deployed opencode config no longer loads context7 and playwright into every message. an existing `~\.config\opencode\opencode.json` is kept (fresh-only), see `docs/OPENCODE.md` to switch.
-- Defender is left as shipped. no script writes its preferences or disables real-time protection.
-- missing winget is a skip with manual IDs in the README, not a failed run.
+- Defender, Windows Update, Store, Terminal, WebView2, and .NET are left alone by the debloat pass. it never touches those services, tasks, or packages.
+- missing winget is a skip with manual IDs in the README, not a failed run. on IoT, apps with a GitHub or direct source still install; AppX and scheduled-task cmdlets missing are skips, not failures.
+- `Setup.cmd` exits clean on success and pauses only on failure.
+- README, QUICKSTART, CLI, APPS, SECURITY, THIRD-PARTY-NOTICES, and the IoT preview describe the post-install profiles, the FOSS app choices, and the single debloat pass.
 - OmniRoute logon tasks use a `.cmd` wrapper so `.cmd` CLI shims work.
 - README and docs describe installs and configs only; tweak and OOSU notes are gone.
 
 ### removed
-- removed every Windows optimization on request. gone: the IoT tweak/debloat phases, `-TweaksOnly`, the tweak matrix, O&O config, Lenovo charge cap, DNS/power/taskbar/privacy tuning, temp cleanup, the daily privacy, power, PLC and Defender-exclusion code, and the unused root `lib/` helpers. these are manual now.
+- removed every Windows optimization on request. gone: the old tiered tweak/debloat phases, `-TweaksOnly`, the tweak matrix, O&O config, Lenovo charge cap, DNS/power/taskbar/privacy tuning, temp cleanup, the daily privacy, power, PLC and Defender-exclusion code, and the unused root `lib/` helpers. these are manual now. the new single debloat pass is a separate, fixed set.
 - removed the third-party package-manager bootstrap and fallback engine from the IoT installer. package sources are now staged files, winget, GitHub releases, and direct vendor URLs.
 - dropped the study pack: Zotero, SumatraPDF, MiKTeX, Typst and their configs. Windows Terminal moved into the base app list.
 - dropped Komorebi and whkd, including keybinds, WM config, autostart shortcuts and smoke checks. the desktop is stock Windows now.
