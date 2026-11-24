@@ -181,7 +181,6 @@ function Invoke-Apps {
         Install-AppPackage -Id 'KeePassXCTeam.KeePassXC' -Name 'KeePassXC'
         Install-AppPackage -Id 'LibreWolf.LibreWolf' -Name 'LibreWolf'
         Install-AppPackage -Id 'ONLYOFFICE.DesktopEditors' -Name 'ONLYOFFICE'
-        Install-AppPackage -Id 'Joplin.Joplin' -Name 'Joplin'
         Install-AppPackage -Id 'Vencord.Vesktop' -Name 'Vesktop'
         Install-AppPackage -Id 'Microsoft.WindowsTerminal' -Name 'Windows Terminal' -Command 'wt'
 
