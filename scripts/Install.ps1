@@ -15,7 +15,7 @@
 
 .PARAMETER Only
     Run selected modules: all, preflight, os, packages, apps, engineering,
-    developer, omniroute, theme, configs, validate.
+    developer, omniroute, theme, configs, debloat, validate.
 
 .PARAMETER Resume
     Continue after the reboot requested by the OS module.
@@ -56,6 +56,7 @@ param(
     [string]$Arch = '',
     [switch]$DetectHardware,
     [switch]$Minimal,
+    [switch]$NoDebloat,
     [switch]$Unattended,
     [switch]$NoWingetBootstrap,
     [string]$OfflineDir = '',
@@ -75,16 +76,24 @@ $ErrorActionPreference = 'Stop'
 
 $libPath = Join-Path $PSScriptRoot 'lib\Common.ps1'
 . $libPath
+. (Join-Path $PSScriptRoot 'lib\Debloat.ps1')
 
 if ($Profile -eq 'iot') {
     # IoT profile: run the modular IoT implementation from scripts/modules/iot.
     . (Join-Path $PSScriptRoot 'modules\iot\IotMain.ps1')
+    # packages sets $failed in this scope. skips never enter it, so only real
+    # install failures turn a successful-looking run into a non-zero exit.
+    $iotFailed = @()
+    if (Get-Variable -Name failed -Scope Script -ErrorAction SilentlyContinue) {
+        $iotFailed = @($script:failed)
+    }
+    if ($iotFailed.Count -gt 0) { exit 1 }
     exit 0
 }
 
 if ($Status) {
     $statusState = Get-StackState
-    $statusOrder = @('preflight', 'os', 'packages', 'apps', 'engineering', 'developer', 'omniroute', 'theme', 'configs', 'validate')
+    $statusOrder = @('preflight', 'os', 'packages', 'apps', 'engineering', 'developer', 'omniroute', 'theme', 'configs', 'debloat', 'validate')
     $statusDone = @($statusState.Completed)
     $statusTodo = @($statusOrder | Where-Object { $statusDone -notcontains $_ })
     Write-Host 'win11-engineering-stack status'
@@ -105,6 +114,7 @@ if ($Status) {
 Reset-WriteCounts
 $script:DryRun = [bool]$DryRun
 $script:Force = [bool]$Force
+$script:NoDebloat = [bool]$NoDebloat
 $script:SxsPath = $SxsPath
 $script:GitName = $GitName
 $script:GitEmail = $GitEmail
@@ -115,7 +125,7 @@ $script:MatlabInstaller = $MatlabInstaller
 $Only = @($Only | ForEach-Object { $_ -split ',' } | ForEach-Object { $_.Trim() } | Where-Object { $_ })
 
 if (-not (Test-Admin) -and -not $DryRun) {
-    $adminModules = @('os', 'engineering', 'developer')
+    $adminModules = @('os', 'engineering', 'developer', 'debloat')
     $needsAdmin = ($Only.Count -eq 0) -or ($Only -contains 'all') -or (@($Only | Where-Object { $adminModules -contains $_ }).Count -gt 0)
 }
 else {
@@ -135,6 +145,7 @@ if ($needsAdmin) {
     if ($Only.Count -gt 0) { $arguments += @('-Only', (& $quote ($Only -join ','))) }
     if ($Resume) { $arguments += '-Resume' }
     if ($Force) { $arguments += '-Force' }
+    if ($NoDebloat) { $arguments += '-NoDebloat' }
     if ($SxsPath) { $arguments += @('-SxsPath', (& $quote $SxsPath)) }
     if ($GitName) { $arguments += @('-GitName', (& $quote $GitName)) }
     if ($GitEmail) { $arguments += @('-GitEmail', (& $quote $GitEmail)) }
@@ -149,7 +160,7 @@ if ($needsAdmin) {
     return
 }
 
-$order = @('preflight', 'os', 'packages', 'apps', 'engineering', 'developer', 'omniroute', 'theme', 'configs', 'validate')
+$order = @('preflight', 'os', 'packages', 'apps', 'engineering', 'developer', 'omniroute', 'theme', 'configs', 'debloat', 'validate')
 $functions = @{
     preflight   = 'Invoke-Preflight'
     os          = 'Invoke-OS'
@@ -160,6 +171,7 @@ $functions = @{
     omniroute   = 'Invoke-OmniRoute'
     theme       = 'Invoke-Theme'
     configs     = 'Invoke-Configs'
+    debloat     = 'Invoke-DebloatModule'
     validate    = 'Invoke-Validate'
 }
 

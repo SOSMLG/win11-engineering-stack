@@ -16,7 +16,7 @@ to the profile script unchanged.
 `Install.ps1 -Verify` is an alias for the matching validator. Neither validation
 path writes settings, state, logs, transcripts, or reports. `Setup.cmd` always
 starts the IoT profile through `Install.ps1` with `-Unattended` before any extra
-flags you pass.
+flags you pass. It exits clean on success and pauses only on failure.
 
 ## common flags
 
@@ -31,9 +31,10 @@ flags you pass.
 | `-ConfigsOnly` | no | yes | copy configs only |
 | `-OfflineDir` | no | yes | staged install source |
 | `-SkipApps` | no | yes | skip app install phase |
+| `-NoDebloat` | yes | yes | skip the single default debloat pass |
 
 daily `-Only` accepts `preflight`, `os`, `packages`, `apps`, `engineering`,
-`developer`, `omniroute`, `theme`, `configs`, `validate`, or `all`.
+`developer`, `omniroute`, `theme`, `configs`, `debloat`, `validate`, or `all`.
 
 iot `-Only` and `-SkipApps` match app IDs as substrings. They do not gate
 configs, drivers, repairs, or other phases.
@@ -44,7 +45,7 @@ daily module load order is alphabetical from `scripts/modules/`. Run order is
 fixed in `scripts/Install.ps1`:
 
 ```text
-preflight os packages apps engineering developer omniroute theme configs validate
+preflight os packages apps engineering developer omniroute theme configs debloat validate
 ```
 
 Daily state lives in `%LOCALAPPDATA%\win11-stack\state.json`. IoT state lives
@@ -60,6 +61,7 @@ sets the exit code and stops the run from claiming the module completed.
 
 - `0` means the checked path completed without a hard failure.
 - `1` means at least one real check failed.
+- IoT app installs that actually failed set `1`; skip-only misses do not.
 - a nonzero child exit code is propagated by both front doors.
 - the UAC relaunch waits for the elevated child and returns its exit code.
 
@@ -71,6 +73,7 @@ Defender preferences are never written by this repo.
 
 - `OMNIROUTE_API_KEY` is read from the environment only. It is never written to a file.
 - dry-run skips the execution policy write.
+- the default debloat pass is one fixed set. there are no severity tiers.
 - IoT log, state, transcript, and report setup happens after `-Verify`, so the read-only path writes nothing.
 - LibreWolf default browser is a manual Windows UserChoice step.
 - no published tag is moved by installer runs.

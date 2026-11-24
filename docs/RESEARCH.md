@@ -81,6 +81,11 @@ scans, and exclusions untouched.
   portable alternative: v7.4.4.1, SHA256
   `BCE4A20B0389095CCD5DF95C24FC0F9CA23D4EAF758F259986AC579F548F1774`.
   `tdata` stays next to the executable.
+- Joplin replaces Obsidian. The installer seeds a local-only light profile at
+  `%USERPROFILE%\.config\joplin-desktop\settings.json`.
+- Spotube replaces Spotify. It is installed from winget or the GitHub release.
+  Its Flutter preferences are left to the app because the file shape is not a
+  stable public contract.
 - Vesktop uses `%APPDATA%\vesktop\settings.json`; Vencord uses
   `%APPDATA%\vesktop\settings\settings.json`. Close Vesktop before editing,
   because it rewrites settings on exit.
@@ -111,6 +116,8 @@ scheduled cleanup is configured.
 | Chrome/Edge for personal use | LibreWolf | Separate profiles, no Google sync. |
 | Discord desktop | Vesktop | Vencord, lower overhead, no telemetry plugins. |
 | Telegram Desktop | MercuryGram (manual) | Portable, pinned release. |
+| Obsidian | Joplin | AGPL-3.0, local-first, optional sync. |
+| Spotify | Spotube | AGPL-3.0 client; YouTube-backed playback, one-time setup. |
 | WinRAR | 7-Zip | No nag screen. |
 | Browser password store | KeePassXC | Local vault, no cloud. |
 | Flow Launcher | Windows Start search | No extra background app. |

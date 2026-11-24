@@ -11,7 +11,7 @@
     <text x="60" y="182" fill="#E8A33D">$</text><text x="80" y="182" fill="#D8D3C8">Install.ps1 -Profile iot -OfflineDir D:\stage</text>
     <text x="60" y="216" fill="#E8A33D">$</text><text x="80" y="216" fill="#D8D3C8">Validate.ps1 -Profile iot</text>
     <text x="60" y="264" fill="#9A9AA2">sources</text><text x="140" y="264" fill="#D8D3C8">staged files, winget, vendor URLs</text>
-    <text x="60" y="296" fill="#9A9AA2">desktop</text><text x="140" y="296" fill="#D8D3C8">stock Windows, no tweaks or debloat</text>
+    <text x="60" y="296" fill="#9A9AA2">desktop</text><text x="140" y="296" fill="#D8D3C8">slim post-install, one default debloat pass</text>
     <text x="60" y="328" fill="#9A9AA2">verify</text><text x="140" y="328" fill="#D8D3C8">checks configs and installed state</text>
   </g>
 </svg>

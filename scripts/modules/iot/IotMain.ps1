@@ -18,6 +18,8 @@ if ($Verify) {
   $repoFiles = @(
     'config\defaults.json',
     'config\hashes.json',
+    'config\debloat.json',
+    'config\joplin\settings.json',
     'config\opencode\opencode.json',
     'config\vscodium\settings.json',
     'config\vesktop\settings.json',
@@ -64,8 +66,17 @@ if ($Verify) {
 
 $Stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 # C:\Windows\Logs needs admin. non-admin runs fall back to TEMP instead of dying.
-try { New-Item -ItemType Directory -Force -Path $LogDir -EA Stop | Out-Null }
-catch { $LogDir = Join-Path $env:TEMP 'Win-Iot-Setup'; New-Item -ItemType Directory -Force -Path $LogDir -EA SilentlyContinue | Out-Null }
+# probe a real write: an existing directory can still be read-only for this user.
+try {
+  New-Item -ItemType Directory -Force -Path $LogDir -EA Stop | Out-Null
+  $probe = Join-Path $LogDir '.write-test'
+  Set-Content -Path $probe -Value 'ok' -Encoding Ascii -EA Stop
+  Remove-Item $probe -Force -EA SilentlyContinue
+}
+catch {
+  $LogDir = Join-Path $env:TEMP 'Win-Iot-Setup'
+  New-Item -ItemType Directory -Force -Path $LogDir -EA SilentlyContinue | Out-Null
+}
 # non-admin runs land in TEMP, so the state dir follows the log dir there.
 if ($StateDir -eq 'C:\Windows\Logs\Win-Iot-Setup\state' -and $LogDir -ne 'C:\Windows\Logs\Win-Iot-Setup') { $StateDir = Join-Path $LogDir 'state' }
 $LogFile = Join-Path $LogDir "install-$Stamp.log"
@@ -158,6 +169,8 @@ if ($OfflineDir) {
 }
 
 . (Join-Path $Repo 'scripts\modules\iot\Repairs.ps1')
+
+. (Join-Path $Repo 'scripts\modules\iot\Debloat.ps1')
 
 . (Join-Path $Repo 'scripts\modules\iot\Configs.ps1')
 
